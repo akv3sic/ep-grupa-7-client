@@ -41,6 +41,15 @@ const router = createRouter({
         title: 'Radni centri'
       }
     },
+    // catch all 404
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: () => import('@/views/NotFoundView.vue'),
+      meta: {
+        title: '404'
+      }
+    }
   ]
 })
 
