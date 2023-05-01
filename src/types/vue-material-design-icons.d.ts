@@ -25,3 +25,31 @@ declare module 'vue-material-design-icons/Menu.vue' {
     const component: Component;
     export default component;
   }
+
+  declare module 'vue-material-design-icons/Pencil.vue' {
+    import { Component } from 'vue';
+  
+    const component: Component;
+    export default component;
+  }
+
+  declare module 'vue-material-design-icons/Close.vue' {
+    import { Component } from 'vue';
+  
+    const component: Component;
+    export default component;
+  }
+
+  declare module 'vue-material-design-icons/Check.vue' {
+    import { Component } from 'vue';
+  
+    const component: Component;
+    export default component;
+  }
+  
+  declare module 'vue-material-design-icons/ContentSavePlus.vue' {
+    import { Component } from 'vue';
+  
+    const component: Component;
+    export default component;
+  }

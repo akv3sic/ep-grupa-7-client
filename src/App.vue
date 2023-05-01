@@ -1,10 +1,10 @@
 <template>
   <!-- overlay -->
-  <div
-    v-if="!isCollapsed"
-    class="fixed inset-0 z-10 bg-black bg-opacity-50 lg:hidden"
-    @click="toggleNavigationDrawer"
-  ></div>
+  <div v-if="!isCollapsed" class="fixed inset-0 z-10 bg-black bg-opacity-50 lg:hidden" @click="toggleNavigationDrawer">
+  </div>
+
+  <!-- toast -->
+  <Toast />
 
   <div class="flex h-screen">
     <NavigationDrawer :is-collapsed="isCollapsed" />
@@ -27,6 +27,7 @@ import Navbar from '@/components/layout/TheNavbar.vue';
 import NavigationDrawer from '@/components/layout/TheNavigationDrawer.vue';
 import { useNavigationDrawerStore } from '@/stores/navigationDrawer';
 import { storeToRefs } from 'pinia';
+import Toast from 'primevue/toast';
 
 export default defineComponent({
   name: 'Office',
@@ -43,9 +44,9 @@ export default defineComponent({
   components: {
     Navbar,
     NavigationDrawer,
+    Toast
   },
 });
 </script>
 
-<style>
-</style>
+<style></style>
