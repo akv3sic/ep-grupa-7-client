@@ -13,14 +13,25 @@ const router = createRouter({
     {
       path: '/zaposlenici',
       name: 'employees',
-      component: () => import('@/views/employees/EmployeesListView.vue')
+      component: () => import('@/views/employees/EmployeesListView.vue'),
+      meta: {
+        title: 'Zaposlenici'
+      }
     },
     {
       path: '/radna-mjesta',
       name: 'workplaces',
-      component: WorkPlacesListViewVue
+      component: WorkPlacesListViewVue,
+      meta: {
+        title: 'Radna mjesta'
+      }
     },
   ]
+})
+
+// dynamically set application title
+router.beforeEach((to, from) => {
+  to.meta.title ? document.title = `${to.meta.title} - WorkOrders+` : document.title = 'WorkOrders+'
 })
 
 export default router
