@@ -53,3 +53,39 @@ declare module 'vue-material-design-icons/Menu.vue' {
     const component: Component;
     export default component;
   }
+
+  declare module 'vue-material-design-icons/History.vue' {
+    import { Component } from 'vue';
+
+    const component: Component;
+    export default component;
+  }
+
+  declare module 'vue-material-design-icons/CloseCircleOutline.vue' {
+    import { Component } from 'vue';
+
+    const component: Component;
+    export default component;
+  }
+
+  declare module 'vue-material-design-icons/KeyboardReturn.vue' {
+    import { Component } from 'vue';
+
+    const component: Component;
+    export default component;
+  }
+
+  declare module 'vue-material-design-icons/FileAccount.vue' {
+    import { Component } from 'vue';
+
+    const component: Component;
+    export default component;
+  }
+
+  declare module 'vue-material-design-icons/AlertCircleOutline.vue' {
+    import { Component } from 'vue';
+
+    const component: Component;
+    export default component;
+  }
+  
