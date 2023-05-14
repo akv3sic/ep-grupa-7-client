@@ -14,7 +14,88 @@
             <!-- actions  -->
             <Button label="Dodaj zaposlenika" icon="pi pi-plus" size="small"></Button>
             <!-- search employees  -->
-            <InputText placeholder="Traži zaposlenika" class="p-inputtext-sm md:!ml-2 -mr-1" />
+            <InputText placeholder="Traži zaposlenika" class="p-inputtext-sm md:!ml-2 -mr-1" @focus="openSearchModal" />
+        </div>
+    </div>
+
+    <!-- search modal  -->
+    <Dialog v-model:visible="isModalVisible" modal class="w-10/12 sm:w-8/12 md:w-4/12" closeOnEscape :show-header="true"
+        :style="{ 'border-radius': '0.5rem' }">
+        <template #header>
+            <div class="flex flex-row w-full pr-4">
+                <InputText placeholder="Traži po imenu i/ili prezimenu" class="w-full" v-model="searchQuery" clear />
+            </div>
+        </template>
+        <div class="flex flex-col">
+            <!-- recent searches -->
+            <div class="flex flex-col" v-if="searchQuery.length == 0">
+                <div class="flex flex-row justify-between items-center">
+                    <h3 class="font-medium text-sm text-blue-500">Nedavne pretrage</h3>
+                </div>
+                <div class="flex flex-col mt-2">
+                    <div class="flex flex-row justify-between items-center hover:bg-blue-100 p-2 rounded-md my-1"
+                        v-for="(recentSearch, index) in recentSearches" :key="index">
+
+                        <div class="flex">
+                            <History fillColor="#6B7280" />
+                            <span class="m-1 font-medium text-sm text-gray-500">
+                                {{ recentSearch.first_name + ' ' + recentSearch.last_name + ' - ' +
+                                    recentSearch.department }}
+                            </span>
+                        </div>
+                        <span class="text-sm cursor-pointer">
+                            <CloseCircleOutline fillColor="#6B7280" />
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- search results -->
+            <div class="flex flex-col mt-4" v-if="employeesSearchResults.length > 0">
+                <div class="flex flex-row justify-between items-center">
+                    <h3 class="font-medium text-sm text-blue-500">Rezultati pretrage</h3>
+                </div>
+                <div class="flex flex-col mt-2">
+                    <div v-for="(searchResult, index) in employeesSearchResults">
+                        <router-link :to="'zaposlenik/' + searchResult.id"
+                            class="flex flex-row justify-between items-center hover:bg-blue-100 p-2 rounded-md my-1">
+                            <div class="flex">
+                                <FileAccount fillColor="#6B7280" />
+                                <span class="m-1 font-medium text-sm text-gray-500">
+                                    {{ searchResult.first_name + ' ' + searchResult.last_name + ' - ' +
+                                        searchResult.department }}
+                                </span>
+                            </div>
+                            <span class="text-sm cursor-pointer">
+                                <KeyboardReturn fillColor="#6B7280" />
+                            </span>
+                        </router-link>
+                    </div>
+                </div>
+            </div>
+
+            <!-- no results -->
+            <div class="flex flex-col mt-4" v-if="employeesSearchResults.length == 0 && searchQuery.length != 0">
+                <div class="flex flex-col justify-center items-center">
+                    <AlertCirleOutline fillColor="#6B7280" class="mb-5" :size="45" />
+                    <h3 class="font-medium text-sm text-gray-500">
+                        Nema rezultata pretrage za "
+                        <span class="font-bold">
+                            {{ searchQuery }}
+                        </span>
+                        "
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </Dialog>
+
+    <!-- filters -->
+    <div class="flex">
+        <div class="flex-1 flex-row align-center mt-4">
+            <!-- filter by department -->
+            <Dropdown optionValue="id" optionLabel="departmentName" placeholder="Filtriraj po odjelu" showClear
+                class="w-full md:w-1/3 lg:w-1/6 m-1" />
         </div>
     </div>
 
@@ -93,6 +174,13 @@ import Button from 'primevue/button';
 import DeleteOutline from 'vue-material-design-icons/DeleteOutline.vue';
 import AccountDetails from 'vue-material-design-icons/AccountDetails.vue';
 import Paginator from 'primevue/paginator';
+import Dropdown from 'primevue/dropdown';
+import Dialog from 'primevue/dialog';
+import CloseCircleOutline from 'vue-material-design-icons/CloseCircleOutline.vue';
+import History from 'vue-material-design-icons/History.vue';
+import KeyboardReturn from 'vue-material-design-icons/KeyboardReturn.vue';
+import FileAccount from 'vue-material-design-icons/FileAccount.vue';
+import AlertCirleOutline from 'vue-material-design-icons/AlertCircleOutline.vue';
 import { ref } from 'vue';
 
 export default {
@@ -155,12 +243,68 @@ export default {
             },
         ]);
 
+        /* search employees */
+        const searchQuery = ref('');
+        const isModalVisible = ref(false);
+
+        const openSearchModal = () => {
+            isModalVisible.value = true;
+        };
+
+        const closeSearchModal = () => {
+            isModalVisible.value = false;
+        };
+
+        const recentSearches = ref([
+            {
+                "id": "sam2i92ndajd",
+                "first_name": "John",
+                "last_name": "Doe",
+                "department": "IT",
+            },
+            {
+                "id": "sam2i92ndajd",
+                "first_name": "John",
+                "last_name": "Doe",
+                "department": "IT",
+            },
+            {
+                "id": "sam2i92ndajd",
+                "first_name": "John",
+                "last_name": "Doe",
+                "department": "IT",
+            }
+        ]);
+
+        const employeesSearchResults = ref([
+            {
+                "id": "sam2i92ndajd",
+                "first_name": "John",
+                "last_name": "Doe",
+                "department": "IT",
+            },
+            {
+                "id": "sam2i92ndajd",
+                "first_name": "John",
+                "last_name": "Doe",
+                "department": "IT",
+            },
+            {
+                "id": "sam2i92ndajd",
+                "first_name": "John",
+                "last_name": "Doe",
+                "department": "IT",
+            }
+        ]);
+
+        /* search employees end*/
+
         return {
-            employees,
+            employees, searchQuery, isModalVisible, openSearchModal, closeSearchModal, recentSearches, employeesSearchResults,
         }
     },
     components: {
-        InputText, Button, DeleteOutline, AccountDetails, Paginator,
+        InputText, Button, DeleteOutline, AccountDetails, Paginator, Dropdown, Dialog, CloseCircleOutline, History, KeyboardReturn, FileAccount, AlertCirleOutline,
     },
 }
 </script>
