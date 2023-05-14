@@ -100,7 +100,7 @@ export default {
     setup() {
         const employees = ref([
             {
-                first_name: 'Ivan',
+                first_name: 'Mate',
                 last_name: 'Ivić',
                 father_name: 'Ivo',
                 email: 'ivo@test.mail',
