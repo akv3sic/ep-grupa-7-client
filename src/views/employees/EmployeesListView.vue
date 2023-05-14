@@ -18,6 +18,16 @@
         </div>
     </div>
 
+    <!-- filters -->
+    <div class="flex">
+        <div class="flex-1 flex-row align-center mt-4">
+            <!-- filter by department -->
+            <Dropdown optionValue="id" optionLabel="departmentName"
+                placeholder="Filtriraj po odjelu" showClear
+                class="w-full md:w-1/3 lg:w-1/6 m-1" />
+        </div>
+    </div>
+
     <!-- table  -->
     <div class="flex flex-col mt-4">
         <div class="overflow-x-auto">
@@ -93,6 +103,7 @@ import Button from 'primevue/button';
 import DeleteOutline from 'vue-material-design-icons/DeleteOutline.vue';
 import AccountDetails from 'vue-material-design-icons/AccountDetails.vue';
 import Paginator from 'primevue/paginator';
+import Dropdown from 'primevue/dropdown';
 import { ref } from 'vue';
 
 export default {
@@ -160,7 +171,7 @@ export default {
         }
     },
     components: {
-        InputText, Button, DeleteOutline, AccountDetails, Paginator,
+        InputText, Button, DeleteOutline, AccountDetails, Paginator, Dropdown,
     },
 }
 </script>
