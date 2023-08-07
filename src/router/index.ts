@@ -41,6 +41,14 @@ const router = createRouter({
         title: 'Radni centri'
       }
     },
+    {
+      path: '/radni-nalozi',
+      name: 'workOrders',
+      component: () => import('@/views/workOrders/WorkOrdersListView.vue'),
+      meta: {
+        title: 'Radni nalozi'
+      }
+    },
     // catch all 404
     {
       path: '/:pathMatch(.*)*',
