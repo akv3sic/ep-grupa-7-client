@@ -57,6 +57,14 @@ const router = createRouter({
         title: 'Kvarovi'
       }
     },
+    {
+      path: '/postavke',
+      name: 'settings',
+      component: () => import('@/views/SettingsView.vue'),
+      meta: {
+        title: 'Postavke'
+      }
+    },
     // catch all 404
     {
       path: '/:pathMatch(.*)*',
