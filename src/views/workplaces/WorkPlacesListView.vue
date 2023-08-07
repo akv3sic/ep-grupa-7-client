@@ -123,7 +123,7 @@ import { onMounted, ref } from 'vue';
 import { useToast } from "primevue/usetoast";
 
 export default {
-    name: 'WorkplacesListView',
+    name: 'Workplaces',
     setup() {
         const editingId = ref<string | null>(null);
         const isLoading = ref(false);
