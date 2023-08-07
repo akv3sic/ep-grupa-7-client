@@ -20,7 +20,7 @@ const router = createRouter({
     {
       path: '/radna-mjesta',
       name: 'workplaces',
-      component: () => import('@/views/workplaces/WorkplacesListView.vue'),
+      component: () => import('@/views/workplaces/WorkPlacesListView.vue'),
       meta: {
         title: 'Radna mjesta'
       }
