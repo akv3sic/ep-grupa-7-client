@@ -22,7 +22,7 @@
                 <VTextField label="Opis" />
             </div>
             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
-                <VTextField label="Odjel" />
+                <Dropdown :options="departments" optionLabel="name" placeholder="Odjel" />
             </div>
             <!-- actions -->
             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
@@ -119,6 +119,7 @@ import Check from 'vue-material-design-icons/Check.vue';
 import ContentSavePlus from 'vue-material-design-icons/ContentSavePlus.vue';
 import Toast from 'primevue/toast';
 import Button from 'primevue/button';
+import Dropdown from 'primevue/dropdown';
 import { onMounted, ref } from 'vue';
 import { useToast } from "primevue/usetoast";
 
@@ -175,6 +176,21 @@ export default {
                 workCenterName: 'Radni centar 8',
                 workCenterDescription: 'Opis radnog centra 8',
                 workCenterDepartment: 'Odjel 8'
+            }
+        ]);
+
+        const departments = ref([
+            {
+                id: '1',
+                name: 'Odjel 1'
+            },
+            {
+                id: '2',
+                name: 'Odjel 2'
+            },
+            {
+                id: '3',
+                name: 'Odjel 3'
             },
         ]);
 
@@ -227,7 +243,7 @@ export default {
         });
 
         return {
-            workCenters, isLoading, editingId, activateEditing, cancelEditing, saveEditing, isAddingActive, activateAdding, cancelAdding, addNew
+            workCenters, isLoading, editingId, activateEditing, cancelEditing, saveEditing, isAddingActive, activateAdding, cancelAdding, addNew, departments
         };
     },
     components: {
@@ -239,7 +255,8 @@ export default {
         ContentSavePlus,
         Toast,
         Button,
-        VCircularLoader
+        VCircularLoader,
+        Dropdown
     },
 };
 </script>
