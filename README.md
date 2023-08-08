@@ -1,6 +1,7 @@
-# ep-grupa-7-client
+# WorkOrders+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/75459010-d507-4efd-a0b7-7c79cf945228/deploy-status)](https://app.netlify.com/sites/workorders/deploys)
 
-This template should help get you started developing with Vue 3 in Vite.
+School project for the course "Elektroničko poslovanje" at [FSRE](https://fsre.sum.ba/).
 
 ## Recommended IDE Setup
 
