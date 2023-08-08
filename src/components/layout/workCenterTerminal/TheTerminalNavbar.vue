@@ -8,7 +8,7 @@
                     </div>
                     <div class="flex items-center justify-end">
                         <router-link to="/work-center-terminal/radni-nalozi" class="mx-2 text-white navigation__item">
-                            <i class="pi pi-check text-white mr-1"></i>
+                            <i class="pi pi-file text-white mr-1"></i>
                             Radni nalozi
                         </router-link>
                         <router-link to="/work-center-terminal/prijavi-kvar" class="mx-2 text-white navigation__item">
