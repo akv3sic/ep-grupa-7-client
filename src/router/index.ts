@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import HomeView from '../views/office/HomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,7 +12,7 @@ const router = createRouter({
     {
       path: '/zaposlenici',
       name: 'employees',
-      component: () => import('@/views/employees/EmployeesListView.vue'),
+      component: () => import('@/views/office/employees/EmployeesListView.vue'),
       meta: {
         title: 'Zaposlenici'
       }
@@ -20,7 +20,7 @@ const router = createRouter({
     {
       path: '/radna-mjesta',
       name: 'workplaces',
-      component: () => import('@/views/workplaces/WorkPlacesListView.vue'),
+      component: () => import('@/views/office/workplaces/WorkPlacesListView.vue'),
       meta: {
         title: 'Radna mjesta'
       }
@@ -28,7 +28,7 @@ const router = createRouter({
     {
       path: '/odjeli',
       name: 'departments',
-      component: () => import('@/views/departments/DepartmentsListView.vue'),
+      component: () => import('@/views/office/departments/DepartmentsListView.vue'),
       meta: {
         title: 'Odjeli'
       }
@@ -36,7 +36,7 @@ const router = createRouter({
     {
       path: '/radni-centri',
       name: 'workCenters',
-      component: () => import('@/views/workCenters/WorkCentersListView.vue'),
+      component: () => import('@/views/office/workCenters/WorkCentersListView.vue'),
       meta: {
         title: 'Radni centri'
       }
@@ -44,7 +44,7 @@ const router = createRouter({
     {
       path: '/radni-nalozi',
       name: 'workOrders',
-      component: () => import('@/views/workOrders/WorkOrdersListView.vue'),
+      component: () => import('@/views/office/workOrders/WorkOrdersListView.vue'),
       meta: {
         title: 'Radni nalozi'
       }
@@ -52,7 +52,7 @@ const router = createRouter({
     {
       path: '/kvarovi',
       name: 'failures',
-      component: () => import('@/views/failures/FailuresListView.vue'),
+      component: () => import('@/views/office/failures/FailuresListView.vue'),
       meta: {
         title: 'Kvarovi'
       }
@@ -60,7 +60,7 @@ const router = createRouter({
     {
       path: '/postavke',
       name: 'settings',
-      component: () => import('@/views/SettingsView.vue'),
+      component: () => import('@/views/office/SettingsView.vue'),
       meta: {
         title: 'Postavke'
       }
