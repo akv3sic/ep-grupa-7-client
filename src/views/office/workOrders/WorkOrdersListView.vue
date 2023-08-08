@@ -16,6 +16,10 @@
     <div class="flex flex-col mt-4">
         <div class="overflow-x-auto">
             <div class="shadow overflow-hidden sm:rounded-lg">
+                <!-- tab menu -->
+                <div class="mt-4">
+                    <TabMenu :model="tabMenuItems" />
+                </div>
                 <!-- table header -->
                 <div class="bg-gray-50 hidden lg:block" v-if="!isLoading">
                     <div class="grid grid-cols-6 text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -64,12 +68,21 @@
 <script lang="ts">
 import VCircularLoader from '@/components/base/VCircularLoader.vue';
 import Button from 'primevue/button';
+import TabMenu from 'primevue/tabmenu';
 import { ref } from 'vue';
 
 export default {
     name: 'WorkOrders',
     setup() {
         const isLoading = ref(false);
+
+        const currentTab = ref('New');
+
+        const tabMenuItems = ref([
+            { label: 'Novi', icon: 'pi pi-fw pi-plus', command: () => { currentTab.value = 'New'; } },
+            { label: 'Aktivni', icon: 'pi pi-fw pi-cog', command: () => { currentTab.value = 'Active'; } },
+            { label: 'Završeni', icon: 'pi pi-fw pi-check', command: () => { currentTab.value = 'Finished'; } }
+        ]);
 
         const workOrders = ref([
             {
@@ -112,11 +125,14 @@ export default {
         return {
             isLoading,
             workOrders,
+            currentTab,
+            tabMenuItems
         };
     },
     components: {
         VCircularLoader,
-        Button
+        Button,
+        TabMenu
     }
 };
 </script>
