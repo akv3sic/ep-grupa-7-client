@@ -15,7 +15,7 @@
         <template v-for="(item, index) in navigationItems" :key="index">
           <li class="mx-2">
             <router-link :to="item.link" active-class="bg-gray-300 text-gray-900"
-              class="block py-2 px-4 text-gray-800 hover:bg-gray-200 hover:text-gray-900 rounded-md flex items-center">
+              class="py-2 px-4 text-gray-800 hover:bg-gray-200 hover:text-gray-900 rounded-md flex items-center">
               <i class="mr-2" :class="item.icon"></i> <!-- added icon -->
               <span class="font-medium text-sm">
                 {{ item.label }}
@@ -39,14 +39,14 @@ export default defineComponent({
   name: 'NavigationDrawer',
   setup() {
     const navigationItems = [
-      { label: 'Pregled', link: '/', icon: 'pi pi-home' },
-      { label: 'Zaposlenici', link: '/zaposlenici', icon: 'pi pi-user' },
-      { label: 'Radna mjesta', link: '/radna-mjesta', icon: 'pi pi-briefcase' },
-      { label: 'Odjeli', link: '/odjeli', icon: 'pi pi-building' },
-      { label: 'Radni centri', link: '/radni-centri', icon: 'pi pi-sitemap' },
-      { label: 'Radni nalozi', link: '/radni-nalozi', icon: 'pi pi-folder' },
-      { label: 'Kvarovi', link: '/kvarovi', icon: 'pi pi-wrench' },
-      { label: 'Postavke', link: '/postavke', icon: 'pi pi-cog' },
+      { label: 'Pregled', link: '/office', icon: 'pi pi-home' },
+      { label: 'Zaposlenici', link: '/office/zaposlenici', icon: 'pi pi-user' },
+      { label: 'Radna mjesta', link: '/office/radna-mjesta', icon: 'pi pi-briefcase' },
+      { label: 'Odjeli', link: '/office/odjeli', icon: 'pi pi-building' },
+      { label: 'Radni centri', link: '/office/radni-centri', icon: 'pi pi-sitemap' },
+      { label: 'Radni nalozi', link: '/office/radni-nalozi', icon: 'pi pi-folder' },
+      { label: 'Kvarovi', link: '/office/kvarovi', icon: 'pi pi-wrench' },
+      { label: 'Postavke', link: '/office/postavke', icon: 'pi pi-cog' },
     ]
 
 
