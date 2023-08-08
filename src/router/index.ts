@@ -82,6 +82,33 @@ const router = createRouter({
         },
       ]
     },
+    {
+      path: '/work-center-terminal',
+      name: 'work-center-terminal',
+      component: () => import('@/views/workCenterTerminal/WorkCenterTerminalRootView.vue'),
+      meta: {
+        title: 'Pregled'
+      },
+      children: [
+        {
+          path: '',
+          name: 'work-center-terminal-home',
+          component: () => import('@/views/workCenterTerminal/WorkCenterTerminalHomeView.vue'),
+          meta: {
+            title: 'Pregled'
+          }
+        },
+        {
+          path: 'radni-nalozi',
+          name: 'work-center-terminal-work-orders',
+          component: () => import('@/views/office/workOrders/WorkOrdersListView.vue'),
+          meta: {
+            title: 'Radni nalozi'
+          }
+        },
+      ]
+
+    },
 
     // catch all 404
     {

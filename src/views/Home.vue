@@ -13,9 +13,9 @@
                 Office
                 <i class="pi pi-check"></i>
             </button>
-            <button @click="$router.push('/work-center-terminal')" class="button-unavailable">
+            <button @click="$router.push('/work-center-terminal')" class="button-available">
                 Work Center Terminal
-                <i class="pi pi-times"></i>
+                <i class="pi pi-check"></i>
             </button>
             <button @click="$router.push('/about')" class="button-unavailable">
                 About
