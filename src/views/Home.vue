@@ -17,6 +17,10 @@
                 Work Center Terminal
                 <i class="pi pi-check"></i>
             </button>
+            <button @click="$router.push('/prijava')" class="button-available">
+                Prijava
+                <i class="pi pi-check"></i>
+            </button>
             <button @click="$router.push('/about')" class="button-unavailable">
                 About
                 <i class="pi pi-times"></i>

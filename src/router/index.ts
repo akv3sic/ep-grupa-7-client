@@ -12,6 +12,11 @@ const router = createRouter({
       component: Home,
     },
     {
+      path: '/prijava',
+      name: 'login',
+      component: () => import('@/views/LoginView.vue'),
+    },
+    {
       path: '/office',
       name: 'office',
       component: OfficeRootView,
