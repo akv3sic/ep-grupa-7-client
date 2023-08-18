@@ -38,6 +38,14 @@ const router = createRouter({
           }
         },
         {
+          path: 'dodaj-zaposlenika',
+          name: 'add-employee',
+          component: () => import('@/views/office/employees/AddNewEmployeeView.vue'),
+          meta: {
+            title: 'Dodaj zaposlenika'
+          }
+        },
+        {
           path: 'radna-mjesta',
           name: 'workplaces',
           component: () => import('@/views/office/workplaces/WorkPlacesListView.vue'),

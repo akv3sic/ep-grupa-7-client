@@ -12,7 +12,8 @@
         </div>
         <div class="flex flex-row m-1 justify-between">
             <!-- actions  -->
-            <Button label="Dodaj zaposlenika" icon="pi pi-plus" size="small"></Button>
+            <Button label="Dodaj zaposlenika" icon="pi pi-plus" size="small"
+                @click="$router.push('/office/dodaj-zaposlenika')" />
             <!-- search employees  -->
             <InputText placeholder="Traži zaposlenika" class="p-inputtext-sm md:!ml-2 -mr-1" @focus="openSearchModal" />
         </div>
