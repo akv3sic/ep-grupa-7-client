@@ -8,7 +8,7 @@
                 <p class="text-blue-500">Pregled radnih naloga</p>
             </div>
             <div class="flex-1 flex-col">
-                <Button label="Add new work order" icon="pi pi-plus" size="small"></Button>
+                <Button label="Novi nalog" icon="pi pi-plus" size="small" @click="$router.push('/office/dodaj-radni-nalog')" class="p-button-primary mt-2" />
             </div>
         </div>
     </div>

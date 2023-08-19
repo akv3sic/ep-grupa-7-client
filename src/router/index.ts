@@ -75,6 +75,14 @@ const router = createRouter({
           component: () => import('@/views/office/workOrders/WorkOrdersListView.vue'),
           meta: {
             title: 'Radni nalozi'
+          },
+        },
+        {
+          path: 'dodaj-radni-nalog',
+          name: 'add-work-order',
+          component: () => import('@/views/office/workOrders/AddWorkOrderView.vue'),
+          meta: {
+            title: 'Dodaj radni nalog'
           }
         },
         {
