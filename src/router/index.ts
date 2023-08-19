@@ -119,6 +119,11 @@ const router = createRouter({
             title: 'Radni nalozi'
           }
         },
+        {
+          path: 'prijava-kvara',
+          name: 'work-center-terminal-failure-report',
+          component: () => import('@/views/workCenterTerminal/ReportFailureView.vue'),
+        }
       ]
 
     },

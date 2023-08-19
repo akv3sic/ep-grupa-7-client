@@ -11,7 +11,7 @@
                             <i class="pi pi-file text-white mr-1"></i>
                             Radni nalozi
                         </router-link>
-                        <router-link to="/work-center-terminal/prijavi-kvar" class="mx-2 text-white navigation__item">
+                        <router-link to="/work-center-terminal/prijava-kvara" class="mx-2 text-white navigation__item">
                             <i class="pi pi-exclamation-circle text-white mr-1"></i>
                             Prijavi kvar
                         </router-link>
