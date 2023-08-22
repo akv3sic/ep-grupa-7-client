@@ -46,6 +46,10 @@
 import { ref } from 'vue';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
+import { useAuthStore } from '@/stores/auth';
+import { storeToRefs } from 'pinia';
+import router from '@/router';
+import { useToast } from 'primevue/usetoast';
 
 export default {
     name: 'LoginView',
@@ -57,9 +61,29 @@ export default {
         const email = ref('');
         const password = ref('');
 
-        function login() {
-            console.log('Pokušaj prijave s e-mailom:', email.value);
+        const authStore = useAuthStore();
+        const { isAuthenticated, error } = storeToRefs(authStore);
+
+        async function login() {
+            await authStore.login(email.value, password.value);
+            if (isAuthenticated.value) {
+                console.log('Successfully logged in.');
+                showLoginSuccessToast();
+                router.push('/office');
+            } else {
+                console.log('Login failed:', error.value);
+            }
         }
+
+
+        /*************** toast ****************/
+        const toast = useToast();
+
+        const showLoginSuccessToast = () => {
+            toast.add({ severity: 'success', summary: 'Prijava uspješna', detail: 'Dobrodošli u WorkOrders+', life: 3000 });
+        };
+
+        /**************toast END***************/
 
         return {
             email,
