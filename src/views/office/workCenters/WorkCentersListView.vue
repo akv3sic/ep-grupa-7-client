@@ -57,15 +57,15 @@
                         <div class="grid grid-cols-2 lg:grid-cols-4" v-if="editingId != workCenter.id">
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Naziv:</span>
-                                <span>{{ workCenter.workCenterName }}</span>
+                                <span>{{ workCenter.name }}</span>
                             </div>
-                            <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
+                            <div class="px-6 psy-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Opis:</span>
-                                <span>{{ workCenter.workCenterDescription }}</span>
+                                <span v-tooltip="workCenter.description">{{ truncateDescription(workCenter.description) }}</span>
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Odjel:</span>
-                                <span>{{ workCenter.workCenterDepartment }}</span>
+                                <span>{{ workCenter.department.name }}</span>
                             </div>
                             <!-- actions -->
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
@@ -122,62 +122,15 @@ import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
 import { onMounted, ref } from 'vue';
 import { useToast } from "primevue/usetoast";
+import { useWorkCentersStore } from '@/stores/workcenters';
+import { storeToRefs } from 'pinia';
+import type { WorkCenter } from '@/models/workcenter.model';
 
 export default {
     name: 'WorkCenters',
     setup() {
-        const isLoading = ref(false);
-
-        const workCenters = ref([
-            {
-                id: '1',
-                workCenterName: 'Radni centar 1',
-                workCenterDescription: 'Opis radnog centra 1',
-                workCenterDepartment: 'Odjel 1'
-            },
-            {
-                id: '2',
-                workCenterName: 'Radni centar 2',
-                workCenterDescription: 'Opis radnog centra 2',
-                workCenterDepartment: 'Odjel 2'
-            },
-            {
-                id: '3',
-                workCenterName: 'Radni centar 3',
-                workCenterDescription: 'Opis radnog centra 3',
-                workCenterDepartment: 'Odjel 3'
-            },
-            {
-                id: '4',
-                workCenterName: 'Radni centar 4',
-                workCenterDescription: 'Opis radnog centra 4',
-                workCenterDepartment: 'Odjel 4'
-            },
-            {
-                id: '5',
-                workCenterName: 'Radni centar 5',
-                workCenterDescription: 'Opis radnog centra 5',
-                workCenterDepartment: 'Odjel 5'
-            },
-            {
-                id: '6',
-                workCenterName: 'Radni centar 6',
-                workCenterDescription: 'Opis radnog centra 6',
-                workCenterDepartment: 'Odjel 6'
-            },
-            {
-                id: '7',
-                workCenterName: 'Radni centar 7',
-                workCenterDescription: 'Opis radnog centra 7',
-                workCenterDepartment: 'Odjel 7'
-            },
-            {
-                id: '8',
-                workCenterName: 'Radni centar 8',
-                workCenterDescription: 'Opis radnog centra 8',
-                workCenterDepartment: 'Odjel 8'
-            }
-        ]);
+        const workCentersStore = useWorkCentersStore();
+        const { workCenters, isLoading } = storeToRefs(workCentersStore);
 
         const departments = ref([
             {
@@ -195,9 +148,9 @@ export default {
         ]);
 
         // methods and variables for inline editing
-        const editingId = ref<string | null>(null);
+        const editingId = ref<number | null>(null);
 
-        const activateEditing = (id: string) => {
+        const activateEditing = (id: number) => {
             editingId.value = id;
         };
 
@@ -239,11 +192,15 @@ export default {
         /**************toast END***************/
 
         onMounted(() => {
-
+            workCentersStore.fetchWorkCenters();
         });
 
+        const truncateDescription = (description: string) => {
+            return description.length > 30 ? description.substring(0, 30) + '...' : description;
+        };
+
         return {
-            workCenters, isLoading, editingId, activateEditing, cancelEditing, saveEditing, isAddingActive, activateAdding, cancelAdding, addNew, departments
+            workCenters, isLoading, editingId, activateEditing, cancelEditing, saveEditing, isAddingActive, activateAdding, cancelAdding, addNew, departments, truncateDescription
         };
     },
     components: {

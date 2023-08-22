@@ -10,8 +10,8 @@ import './assets/main.css'
 import PrimeVue from 'primevue/config';
 
 //theme
-import "primevue/resources/themes/tailwind-light/theme.css";   
-    
+import "primevue/resources/themes/tailwind-light/theme.css";
+
 //core
 import "primevue/resources/primevue.min.css";
 
@@ -20,6 +20,9 @@ import "primeicons/primeicons.css";
 
 //toast
 import ToastService from 'primevue/toastservice';
+
+//tooltip
+import Tooltip from 'primevue/tooltip';
 
 const app = createApp(App)
 
@@ -31,3 +34,5 @@ app.mount('#app')
 app.use(PrimeVue);
 
 app.use(ToastService);
+
+app.directive('tooltip', Tooltip);
