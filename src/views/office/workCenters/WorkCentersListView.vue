@@ -59,7 +59,7 @@
                                 <span class="text-xs text-gray-400 lg:hidden">Naziv:</span>
                                 <span>{{ workCenter.name }}</span>
                             </div>
-                            <div class="px-6 psy-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
+                            <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Opis:</span>
                                 <span v-tooltip="workCenter.description">{{ truncateDescription(workCenter.description) }}</span>
                             </div>
