@@ -61,7 +61,8 @@
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Opis:</span>
-                                <span v-tooltip="workCenter.description">{{ truncateDescription(workCenter.description) }}</span>
+                                <span v-tooltip="workCenter.description">{{ truncateDescription(workCenter.description)
+                                }}</span>
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Odjel:</span>
@@ -124,7 +125,7 @@ import { onMounted, ref } from 'vue';
 import { useToast } from "primevue/usetoast";
 import { useWorkCentersStore } from '@/stores/workcenters';
 import { storeToRefs } from 'pinia';
-import type { WorkCenter } from '@/models/workcenter.model';
+import { truncateDescription } from '@/utils/stringUtils';
 
 export default {
     name: 'WorkCenters',
@@ -194,10 +195,6 @@ export default {
         onMounted(() => {
             workCentersStore.fetchWorkCenters();
         });
-
-        const truncateDescription = (description: string) => {
-            return description.length > 30 ? description.substring(0, 30) + '...' : description;
-        };
 
         return {
             workCenters, isLoading, editingId, activateEditing, cancelEditing, saveEditing, isAddingActive, activateAdding, cancelAdding, addNew, departments, truncateDescription

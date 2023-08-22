@@ -61,7 +61,7 @@
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Opis:</span>
-                                <span>{{ department.description }}</span>
+                                <span v-tooltip="department.description">{{ truncateDescription(department.description) }}</span>
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Odgovorna osoba:</span>
@@ -123,6 +123,7 @@ import { onMounted, ref } from 'vue';
 import { useToast } from "primevue/usetoast";
 import { useDepartmentsStore } from '@/stores/departments';
 import { storeToRefs } from 'pinia';
+import { truncateDescription } from '@/utils/stringUtils';
 
 export default {
     name: 'departments',
@@ -180,7 +181,7 @@ export default {
         });
 
         return {
-            departments, isLoading, editingId, activateEditing, cancelEditing, saveEditing, isAddingActive, activateAdding, cancelAdding, saveNewdepartment
+            departments, isLoading, editingId, activateEditing, cancelEditing, saveEditing, isAddingActive, activateAdding, cancelAdding, saveNewdepartment, truncateDescription
         };
     },
     components: {
