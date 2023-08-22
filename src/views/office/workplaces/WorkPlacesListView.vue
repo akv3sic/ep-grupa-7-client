@@ -16,13 +16,16 @@
         <!-- inline adding of new workplace -->
         <div class="grid grid-cols-2 lg:grid-cols-4 mt-2 pl-2 shadow" v-if="isAddingActive">
             <div class="py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
-                <VTextField label="Naziv" />
+                <VTextField label="Naziv" :input-value="newWorkplace.name"
+                    @update:input-value="newValue => newWorkplace.name = newValue" />
             </div>
             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
-                <VTextField label="Šifra" />
+                <VTextField label="Šifra" :input-value="newWorkplace.code"
+                    @update:input-value="newValue => newWorkplace.code = newValue" />
             </div>
             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
-                <VTextField label="Bodovi" />
+                <VTextField label="Bodovi" :input-value="newWorkplace.points"
+                    @update:input-value="newValue => newWorkplace.points = newValue" />
             </div>
             <!-- actions -->
             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
@@ -57,15 +60,15 @@
                         <div class="grid grid-cols-2 lg:grid-cols-4" v-if="editingId != workplace.id">
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Naziv:</span>
-                                <span>{{ workplace.workplaceName }}</span>
+                                <span>{{ workplace.name }}</span>
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Šifra:</span>
-                                <span>{{ workplace.workplaceCode }}</span>
+                                <span>{{ workplace.code }}</span>
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Bodovi:</span>
-                                <span>{{ workplace.workplacePoints }}</span>
+                                <span>{{ workplace.points }}</span>
                             </div>
                             <!-- actions -->
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
@@ -73,7 +76,7 @@
                                     <span class="text-xs text-gray-400 lg:hidden">Akcije:</span>
                                     <span class="flex">
                                         <Pencil @click="activateEditing(workplace.id)" />
-                                        <DeleteOutline />
+                                        <DeleteOutline @click="triggerDeleteWorkplace(workplace.id)" />
                                     </span>
                                 </span>
                             </div>
@@ -82,13 +85,16 @@
                         <!-- inline editing -->
                         <div class="grid grid-cols-2 lg:grid-cols-4" v-else>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
-                                <VTextField label="Naziv" />
+                                <VTextField label="Naziv" :input-value="editedWorkplace.name"
+                                    @update:input-value="newValue => editedWorkplace.name = newValue" />
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
-                                <VTextField label="Šifra" />
+                                <VTextField label="Šifra" :input-value="editedWorkplace.code"
+                                    @update:input-value="newValue => editedWorkplace.code = newValue" />
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
-                                <VTextField label="Bodovi" />
+                                <VTextField label="Bodovi" :input-value="editedWorkplace.points"
+                                    @update:input-value="newValue => editedWorkplace.points = newValue" />
                             </div>
                             <!-- actions -->
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
@@ -121,48 +127,39 @@ import Toast from 'primevue/toast';
 import Button from 'primevue/button';
 import { onMounted, ref } from 'vue';
 import { useToast } from "primevue/usetoast";
+import { useWorkplacesStore } from '@/stores/workplaces';
+import { storeToRefs } from 'pinia';
+import type { WorkplaceForCreation } from '@/models/workplaceForCreation.model';
+import type { Workplace } from '@/models/workplace.model';
 
 export default {
     name: 'Workplaces',
     setup() {
-        const editingId = ref<string | null>(null);
-        const isLoading = ref(false);
+        const workplacesStore = useWorkplacesStore();
+        const { workplaces, isLoading } = storeToRefs(workplacesStore);
 
-        const workplaces = ref([
-            {
-                id: '1',
-                workplaceName: 'Radno mjesto 1',
-                workplaceCode: 'RM1',
-                workplacePoints: 10
-            },
-            {
-                id: '2',
-                workplaceName: 'Radno mjesto 2',
-                workplaceCode: 'RM2',
-                workplacePoints: 20
-            },
-            {
-                id: '3',
-                workplaceName: 'Radno mjesto 3',
-                workplaceCode: 'RM3',
-                workplacePoints: 30
+        // editing
+        const editedWorkplace = ref<Workplace>({ id: 0, name: '', code: '', points: '', is_deleted: false });
+        const editingId = ref<number | null>(null);
+        const activateEditing = (id: number) => {
+            const wp = workplaces.value.find(w => w.id === id);
+            if (wp) {
+                editedWorkplace.value = { ...wp };
+                editingId.value = id;
             }
-        ]);
-
-        const isAddingActive = ref(false);
-
-        const activateEditing = (id: string) => {
-            editingId.value = id;
         };
-
         const cancelEditing = () => {
             editingId.value = null;
         };
 
         const saveEditing = () => {
+            workplacesStore.updateWorkplace(editedWorkplace.value);
             editingId.value = null;
             showChangesSavedSuccessfully();
         };
+
+        // adding
+        const isAddingActive = ref(false);
 
         const activateAdding = () => {
             isAddingActive.value = true;
@@ -172,10 +169,27 @@ export default {
             isAddingActive.value = false;
         };
 
-        const saveNewWorkplace = () => {
+        const newWorkplace = ref<WorkplaceForCreation>({
+            name: '',
+            code: '',
+            points: ''
+        });
 
+        const saveNewWorkplace = () => {
+            workplacesStore.addWorkplace(newWorkplace.value);
             isAddingActive.value = false;
             showSuccesfullyAddedNewWorkplace();
+            // clear newWorkplace
+            newWorkplace.value = {
+                name: '',
+                code: '',
+                points: ''
+            };
+        };
+
+        // deleting
+        const triggerDeleteWorkplace = (id: number) => {
+                workplacesStore.deleteWorkplace(id);
         };
 
         /*************** toast ****************/
@@ -191,11 +205,11 @@ export default {
         /**************toast END***************/
 
         onMounted(() => {
-
+            workplacesStore.fetchWorkplaces();
         });
 
         return {
-            workplaces, isLoading, editingId, activateEditing, cancelEditing, saveEditing, isAddingActive, activateAdding, cancelAdding, saveNewWorkplace
+            workplaces, isLoading, editingId, activateEditing, cancelEditing, saveEditing, isAddingActive, activateAdding, cancelAdding, saveNewWorkplace, newWorkplace, editedWorkplace, triggerDeleteWorkplace
         };
     },
     components: {
