@@ -65,7 +65,7 @@
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Odgovorna osoba:</span>
-                                <span>{{ department.manager }}</span>
+                                <span>{{ department.manager.first_name + ' ' + department.manager.last_name }}</span>
                             </div>
                             <!-- actions -->
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
@@ -121,61 +121,19 @@ import Toast from 'primevue/toast';
 import Button from 'primevue/button';
 import { onMounted, ref } from 'vue';
 import { useToast } from "primevue/usetoast";
+import { useDepartmentsStore } from '@/stores/departments';
+import { storeToRefs } from 'pinia';
 
 export default {
     name: 'departments',
     setup() {
-        const isLoading = ref(false);
-
-        const departments = ref([
-            {
-                id: '1',
-                name: 'Odjel 1',
-                description: 'Opis odjela 1',
-                manager: 'Ivan Horvat',
-            },
-            {
-                id: '2',
-                name: 'Odjel 2',
-                description: 'Opis odjela 2',
-                manager: 'Marija Marić',
-            },
-            {
-                id: '3',
-                name: 'Odjel 3',
-                description: 'Opis odjela 3',
-                manager: 'Ivan Horvat',
-            },
-            {
-                id: '4',
-                name: 'Odjel 4',
-                description: 'Opis odjela 4',
-                manager: 'Pero Perić',
-            },
-            {
-                id: '5',
-                name: 'Odjel 5',
-                description: 'Opis odjela 5',
-                manager: 'Ivan Horvat',
-            },
-            {
-                id: '6',
-                name: 'Odjel 6',
-                description: 'Opis odjela 6',
-                manager: 'Mato Matić',
-            },
-            {
-                id: '7',
-                name: 'Odjel 7',
-                description: 'Opis odjela 7',
-                manager: 'Ivan Horvat',
-            },
-        ]);
+        const departmentsStore = useDepartmentsStore();
+        const { departments, isLoading } = storeToRefs(departmentsStore);
 
         // methods for editing
-        const editingId = ref<string | null>(null);
+        const editingId = ref<number | null>(null);
 
-        const activateEditing = (id: string) => {
+        const activateEditing = (id: number) => {
             editingId.value = id;
         };
 
@@ -218,7 +176,7 @@ export default {
         /**************toast END***************/
 
         onMounted(() => {
-
+            departmentsStore.fetchDepartments();
         });
 
         return {
