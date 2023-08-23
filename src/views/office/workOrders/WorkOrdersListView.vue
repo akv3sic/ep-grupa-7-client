@@ -8,7 +8,8 @@
                 <p class="text-blue-500">Pregled radnih naloga</p>
             </div>
             <div class="flex-1 flex-col">
-                <Button label="Novi nalog" icon="pi pi-plus" size="small" @click="$router.push('/office/dodaj-radni-nalog')" class="p-button-primary mt-2" />
+                <Button label="Novi nalog" icon="pi pi-plus" size="small" @click="$router.push('/office/dodaj-radni-nalog')"
+                    class="p-button-primary mt-2" />
             </div>
         </div>
     </div>
@@ -21,7 +22,7 @@
                     <TabMenu :model="tabMenuItems" />
                 </div>
                 <!-- table header -->
-                <div class="bg-gray-50 hidden lg:block" v-if="!isLoading">
+                <div class="bg-gray-50 hidden lg:block" v-if="!isLoadingWorkOrders">
                     <div class="grid grid-cols-6 text-xs font-medium text-gray-500 uppercase tracking-wider">
                         <div class="px-6 py-3">#</div>
                         <div class="px-6 py-3">Naziv</div>
@@ -32,7 +33,7 @@
                     </div>
                 </div>
                 <!-- table body -->
-                <div class="bg-white divide-y divide-gray-200" v-if="!isLoading">
+                <div class="bg-white divide-y divide-gray-200" v-if="!isLoadingWorkOrders">
                     <template v-for="(workOrder, index) in workOrders" :key="index">
 
                         <div class="grid grid-cols-2 lg:grid-cols-6">
@@ -50,11 +51,11 @@
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Radni centar:</span>
-                                <span>{{ workOrder.workCenter }}</span>
+                                <span>{{ workOrder.work_center }}</span>
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Assigned To:</span>
-                                <span>{{ workOrder.assignedTo }}</span>
+                                <span>{{ workOrder.assigned_to }}</span>
                             </div>
                         </div>
                     </template>
@@ -69,13 +70,24 @@
 import VCircularLoader from '@/components/base/VCircularLoader.vue';
 import Button from 'primevue/button';
 import TabMenu from 'primevue/tabmenu';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useWorkOrdersStore } from '@/stores/workOrders.store';
+import { storeToRefs } from 'pinia';
 
 export default {
     name: 'WorkOrders',
     setup() {
-        const isLoading = ref(false);
+        /**
+         * work orders store
+         */
 
+        const workOrdersStore = useWorkOrdersStore();
+        const { isLoading: isLoadingWorkOrders, workOrders } = storeToRefs(workOrdersStore);
+
+
+        /**
+         * tab menu
+         */
         const currentTab = ref('New');
 
         const tabMenuItems = ref([
@@ -84,46 +96,17 @@ export default {
             { label: 'Završeni', icon: 'pi pi-fw pi-check', command: () => { currentTab.value = 'Finished'; } }
         ]);
 
-        const workOrders = ref([
-            {
-                id: '1',
-                title: 'Work order 1',
-                status: 'Open',
-                workCenter: 'WC 1',
-                assignedTo: 'Ivo Ivić'
-            },
-            {
-                id: '2',
-                title: 'Work order 2',
-                status: 'Closed',
-                workCenter: 'WC 2',
-                assignedTo: 'Mara Marić'
-            },
-            {
-                id: '3',
-                title: 'Work order 3',
-                status: 'Open',
-                workCenter: 'WC 3',
-                assignedTo: 'Ivo Ivić'
-            },
-            {
-                id: '4',
-                title: 'Work order 4',
-                status: 'Closed',
-                workCenter: 'WC 4',
-                assignedTo: 'Mara Marić'
-            },
-            {
-                id: '5',
-                title: 'Work order 5',
-                status: 'Open',
-                workCenter: 'WC 5',
-                assignedTo: 'Ivo Ivić'
-            },
-        ]);
+
+        /**
+         * fetch work orders
+         */
+        onMounted(() => {
+            workOrdersStore.fetchWorkOrders();
+        });
+
 
         return {
-            isLoading,
+            isLoadingWorkOrders,
             workOrders,
             currentTab,
             tabMenuItems
