@@ -133,7 +133,15 @@ const router = createRouter({
           component: () => import('@/views/workCenterTerminal/ReportFailureView.vue'),
         }
       ]
-
+    },
+    // non authorized
+    {
+      path: '/pristup-zabranjen',
+      name: 'forbidden',
+      component: () => import('@/views/NotAuthorizedView.vue'),
+      meta: {
+        title: 'Pristup zabranjen'
+      }
     },
 
     // catch all 404
