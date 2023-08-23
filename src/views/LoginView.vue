@@ -65,11 +65,17 @@ export default {
         const { isAuthenticated, error } = storeToRefs(authStore);
 
         async function login() {
-            await authStore.login(email.value, password.value);
+            const isSuperUser = await authStore.login(email.value, password.value);
+
             if (isAuthenticated.value) {
                 console.log('Successfully logged in.');
                 showLoginSuccessToast();
-                router.push('/office');
+
+                if (isSuperUser) {
+                    router.push('/office');
+                } else {
+                    router.push('/work-center-terminal');
+                }
             } else {
                 console.log('Login failed:', error.value);
             }
