@@ -126,6 +126,7 @@ import { useToast } from "primevue/usetoast";
 import { useWorkCentersStore } from '@/stores/workcenters';
 import { storeToRefs } from 'pinia';
 import { truncateDescription } from '@/utils/stringUtils';
+import { useDepartmentsStore } from '@/stores/departments';
 
 export default {
     name: 'WorkCenters',
@@ -133,20 +134,9 @@ export default {
         const workCentersStore = useWorkCentersStore();
         const { workCenters, isLoading } = storeToRefs(workCentersStore);
 
-        const departments = ref([
-            {
-                id: '1',
-                name: 'Odjel 1'
-            },
-            {
-                id: '2',
-                name: 'Odjel 2'
-            },
-            {
-                id: '3',
-                name: 'Odjel 3'
-            },
-        ]);
+        const departmentsStore = useDepartmentsStore();
+        const { departments } = storeToRefs(departmentsStore);
+
 
         // methods and variables for inline editing
         const editingId = ref<number | null>(null);
@@ -194,6 +184,7 @@ export default {
 
         onMounted(() => {
             workCentersStore.fetchWorkCenters();
+            departmentsStore.fetchDepartments();
         });
 
         return {
