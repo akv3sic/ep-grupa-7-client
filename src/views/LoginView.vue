@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="min-h-screen flex flex-col items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-md w-full bg-white p-6 rounded-lg shadow-md">
 
             <div class="flex items-center justify-center mb-8">
@@ -39,6 +39,7 @@
                 Natrag na početnu stranicu
             </router-link>
         </div>
+        <TheThinFooter />
     </div>
 </template>
 
@@ -50,12 +51,14 @@ import { useAuthStore } from '@/stores/auth';
 import { storeToRefs } from 'pinia';
 import router from '@/router';
 import { useToast } from 'primevue/usetoast';
+import TheThinFooter from '@/components/layout/TheThinFooter.vue';
 
 export default {
     name: 'LoginView',
     components: {
         InputText,
-        Button
+        Button,
+        TheThinFooter
     },
     setup() {
         const email = ref('');
