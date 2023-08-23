@@ -1,28 +1,37 @@
 <template>
-    <div class="main">
-        <h1 class="app-title">WorkOrders+</h1>
-        <p>
-            Web aplikacija za upravljanje radnim nalozima u proizvodnim pogonima.
-        </p>
-        <br>
+    <div class="relative h-full">
+        <div class="main">
+            <h1 class="app-title">WorkOrders+</h1>
+            <p>
+                Web aplikacija za upravljanje radnim nalozima u proizvodnim pogonima.
+            </p>
+            <br>
 
-        <h2>Brzi linkovi:</h2>
-        <div class="buttons">
-            <button @click="$router.push('/about')" class="button-available">
-                O projetku
-            </button>
-            <a href="https://drawsql.app/teams/-b/diagrams/elektronicko-poslovanje-grupa-7" target="_blank">
-                <button class="button-available">
-                    Dijagram baze podataka
+            <h2>Brzi linkovi:</h2>
+            <div class="buttons">
+                <button @click="$router.push('/about')" class="button-available">
+                    O projetku
                 </button>
-            </a>
-            <button class="button-available">
-                Tehnička dokumentacija
-            </button>
+                <a href="https://drawsql.app/teams/-b/diagrams/elektronicko-poslovanje-grupa-7" target="_blank">
+                    <button class="button-available">
+                        Dijagram baze podataka
+                    </button>
+                </a>
+                <button class="button-available">
+                    Tehnička dokumentacija
+                </button>
+            </div>
         </div>
-    </div>
 
-    <TheThinFooter />
+        <!-- Floating Action Button -->
+        <router-link to="/prijava"
+            class="fixed top-6 right-6 button-available text-white p-4 rounded-full shadow-lg transition duration-200 fab-button"
+            title="Login">
+            <i class="pi pi-sign-in pt-1 px-1"></i>
+        </router-link>
+
+        <TheThinFooter />
+    </div>
 </template>
 
 <script lang="ts">
@@ -94,6 +103,11 @@ button {
 button:hover {
     opacity: 0.8;
 }
+
+.fab-button:hover {
+    opacity: 0.8;
+}
+
 
 .app-title {
     font-size: 2rem;
