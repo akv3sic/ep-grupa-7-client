@@ -100,11 +100,54 @@ export const useAuthStore = defineStore("auth", () => {
         }
     };
 
+    /**
+     * Asynchronously logs a user in using their RFID card's unique ID.
+     * 
+     * @param {string} rfid - The RFID card's unique identification.
+     * @returns {Promise<boolean>} - Returns `true` if the login was successful,
+     *                              `false` otherwise.
+     * 
+     * @throws Will set the `error` ref value with the error message if any error occurs.
+     * 
+     * @example
+     * 
+     * const isSuccessful = await loginWithRFID('RFID12345678');
+     * if (isSuccessful) {
+     *     const user = JSON.parse(localStorage.getItem('user'));
+     *     if (user?.is_superuser) {
+     *         // Redirect superuser to a specific route or handle as needed.
+     *     }
+     * }
+     */
+    const loginWithRFID = async (rfid_uid: string): Promise<boolean> => {
+        try {
+            const response = await httpClient.post('/rfid-login/', { rfid_uid });
+            if (response.status === 200 && response.data.message === "Login successful") {
+                isAuthenticated.value = true;
+                user.value = response.data.user;
+                localStorage.setItem('isAuthenticated', 'true');
+                localStorage.setItem('user', JSON.stringify(response.data.user));
+                return true;
+            } else {
+                error.value = "Greška prilikom RFID prijave";
+                return false;
+            }
+        } catch (err: any) {
+            if (err instanceof Error) {
+                error.value = err.message;
+            } else {
+                error.value = "Dogodila se greška prilikom RFID prijave";
+            }
+            return false;
+        }
+    };
+
     return {
         isAuthenticated,
         user,
         error,
         login,
-        logout
+        logout,
+        loginWithRFID,
     };
 });

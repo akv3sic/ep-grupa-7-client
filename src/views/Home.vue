@@ -31,17 +31,22 @@
         </router-link>
 
         <TheThinFooter />
+        
+        <!-- RFID Login -->
+        <RFIDLoginView />
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import TheThinFooter from '@/components/layout/TheThinFooter.vue';
+import RFIDLoginView from './RFIDLoginView.vue';
 
 export default defineComponent({
     name: 'AppHome',
     components: {
-        TheThinFooter
+        TheThinFooter,
+        RFIDLoginView
     },
     setup() {
         return {};
