@@ -95,8 +95,8 @@
     <div class="flex">
         <div class="flex-1 flex-row align-center mt-4">
             <!-- filter by department -->
-            <Dropdown optionValue="id" optionLabel="departmentName" placeholder="Filtriraj po odjelu" showClear
-                class="w-full md:w-1/3 lg:w-1/6 m-1" />
+            <Dropdown optionValue="id" optionLabel="name" placeholder="Filtriraj po odjelu" showClear
+                class="w-full md:w-1/3 lg:w-1/6 m-1" :options="departments" />
         </div>
     </div>
 
@@ -182,7 +182,9 @@ import History from 'vue-material-design-icons/History.vue';
 import KeyboardReturn from 'vue-material-design-icons/KeyboardReturn.vue';
 import FileAccount from 'vue-material-design-icons/FileAccount.vue';
 import AlertCirleOutline from 'vue-material-design-icons/AlertCircleOutline.vue';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useDepartmentsStore } from '@/stores/departments';
+import { storeToRefs } from 'pinia';
 
 export default {
     name: 'EmployeesListView',
@@ -244,6 +246,11 @@ export default {
             },
         ]);
 
+
+        /* departments */
+        const departmentsStore = useDepartmentsStore();
+        const { departments } = storeToRefs(departmentsStore);
+
         /* search employees */
         const searchQuery = ref('');
         const isModalVisible = ref(false);
@@ -300,8 +307,13 @@ export default {
 
         /* search employees end*/
 
+        onMounted(() => {
+            departmentsStore.fetchDepartments();
+            console.log(departments.value);
+        })
+
         return {
-            employees, searchQuery, isModalVisible, openSearchModal, closeSearchModal, recentSearches, employeesSearchResults,
+            employees, searchQuery, isModalVisible, openSearchModal, closeSearchModal, recentSearches, employeesSearchResults, departments
         }
     },
     components: {
