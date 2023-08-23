@@ -42,19 +42,19 @@
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Opis:</span>
-                                <span>{{ failure.description }}</span>
+                                <span v-tooltip="failure.description">{{ truncateDescription(failure.description) }}</span>
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Prijavio/la:</span>
-                                <span>{{ failure.reportedBy }}</span>
+                                <span>{{ failure.reported_by.first_name + " " + failure.reported_by.last_name }}</span>
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Radni centar:</span>
-                                <span>{{ failure.workCenter }}</span>
+                                <span>{{ failure.work_center.name }}</span>
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Status:</span>
-                                <span>{{ failure.status }}</span>
+                                <span>{{ failure.work_order }}</span>
                             </div>
                         </div>
                     </template>
@@ -68,43 +68,24 @@
 <script lang="ts">
 import VCircularLoader from '@/components/base/VCircularLoader.vue';
 import Button from 'primevue/button';
-import { ref } from 'vue';
+import { useFailuresStore } from '@/stores/failures.store';
+import { storeToRefs } from 'pinia';
+import { onMounted } from 'vue';
+import { truncateDescription } from '@/utils/stringUtils';
 
 export default {
     name: 'FailuresList',
     setup() {
-        const isLoading = ref(false);
+        const { failures, isLoading } = storeToRefs(useFailuresStore());
 
-        const failures = ref([
-            {
-                id: '1',
-                name: 'Failure 1',
-                description: 'Description of failure 1',
-                reportedBy: 'Ivo Ivić',
-                workCenter: 'WC 1',
-                status: 'Open'
-            },
-            {
-                id: '2',
-                name: 'Failure 2',
-                description: 'Description of failure 2',
-                reportedBy: 'Mara Marić',
-                workCenter: 'WC 2',
-                status: 'Closed'
-            },
-            {
-                id: '3',
-                name: 'Failure 3',
-                description: 'Description of failure 3',
-                reportedBy: 'Ivo Ivić',
-                workCenter: 'WC 3',
-                status: 'Open'
-            },
-        ]);
+        onMounted(() => {
+            useFailuresStore().fetchFailures();
+        })
 
         return {
             isLoading,
             failures,
+            truncateDescription
         };
     },
     components: {
