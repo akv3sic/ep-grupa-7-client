@@ -113,7 +113,7 @@
                         <div class="px-6 py-3">Ime oca</div>
                         <div class="px-6 py-3">Broj mobitela</div>
                         <div class="px-6 py-3">Datum rođenja</div>
-                        <div class="px-6 py-3">Odjel</div>
+                        <div class="px-6 py-3">Radno mjesto</div>
                         <div class="px-6 py-3">Grad</div>
                         <div class="px-6 py-3"></div>
                     </div>
@@ -144,8 +144,8 @@
                                 <span class="label">{{ employee.date_of_birth }}</span>
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
-                                <span class="text-xs text-gray-400 lg:hidden">Odjel:</span>
-                                <span class="label">{{ employee.department }}</span>
+                                <span class="text-xs text-gray-400 lg:hidden">Radno mjesto:</span>
+                                <span class="label">{{ employee.workplace.name }}</span>
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Grad:</span>
@@ -166,7 +166,7 @@
             </div>
         </div>
     </div>
-    <Paginator :rows="6" :totalRecords="50" :rowsPerPageOptions="[6, 10, 15]" class="mt-4"></Paginator>
+    <Paginator :rows="6" :totalRecords="50" :rowsPerPageOptions="[6, 10, 15]" class="mt-4" />
 </template>
 
 <script lang="ts">
@@ -185,67 +185,14 @@ import AlertCirleOutline from 'vue-material-design-icons/AlertCircleOutline.vue'
 import { ref, onMounted } from 'vue';
 import { useDepartmentsStore } from '@/stores/departments';
 import { storeToRefs } from 'pinia';
+import { useEmployeesStore } from '@/stores/employees.store';
 
 export default {
     name: 'EmployeesListView',
     setup() {
-        const employees = ref([
-            {
-                first_name: 'Mate',
-                last_name: 'Ivić',
-                father_name: 'Ivo',
-                email: 'ivo@test.mail',
-                date_of_birth: '01.01.1990.',
-                department: 'Odjel 1',
-                city: 'Zagreb',
-            },
-            {
-                first_name: 'Marko',
-                last_name: 'Markić',
-                father_name: 'Marko',
-                email: 'marko@test.mail',
-                date_of_birth: '01.01.1990.',
-                department: 'Odjel 2',
-                city: 'Zagreb',
-            },
-            {
-                first_name: 'Pero',
-                last_name: 'Perić',
-                father_name: 'Ivo',
-                email: 'pero@test.mail',
-                date_of_birth: '01.01.1990.',
-                department: 'Odjel 2',
-                city: 'Široki Brijeg',
-            },
-            {
-                first_name: 'Ana',
-                last_name: 'Anić',
-                father_name: 'Stipe',
-                email: 'ana@test.mail',
-                date_of_birth: '01.01.1990.',
-                department: 'Odjel 1',
-                city: 'Mostar',
-            },
-            {
-                first_name: 'Ivan',
-                last_name: 'Ivić',
-                father_name: 'Ivo',
-                email: 'ivo@test.mail',
-                date_of_birth: '01.01.1990.',
-                department: 'Odjel 1',
-                city: 'Zagreb',
-            },
-            {
-                first_name: 'Marko',
-                last_name: 'Markić',
-                father_name: 'Marko',
-                email: 'marko@test.mail',
-                date_of_birth: '01.01.1990.',
-                department: 'Odjel 2',
-                city: 'Zagreb',
-            },
-        ]);
-
+        /* employees */
+        const employeesStore = useEmployeesStore();
+        const { employees, isLoading: isLoadingEmployees } = storeToRefs(employeesStore);
 
         /* departments */
         const departmentsStore = useDepartmentsStore();
@@ -309,11 +256,11 @@ export default {
 
         onMounted(() => {
             departmentsStore.fetchDepartments();
-            console.log(departments.value);
+            employeesStore.fetchEmployees();
         })
 
         return {
-            employees, searchQuery, isModalVisible, openSearchModal, closeSearchModal, recentSearches, employeesSearchResults, departments
+            employees, isLoadingEmployees, searchQuery, isModalVisible, openSearchModal, closeSearchModal, recentSearches, employeesSearchResults, departments
         }
     },
     components: {
