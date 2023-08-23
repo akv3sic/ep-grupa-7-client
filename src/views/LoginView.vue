@@ -1,7 +1,8 @@
 <template>
     <div class="min-h-screen flex flex-col items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-md w-full bg-white p-6 rounded-lg shadow-md">
 
+        <!-- Traditional login form -->
+        <div v-if="!showRfidLogin" class="max-w-md w-full bg-white p-6 rounded-lg shadow-md">
             <div class="flex items-center justify-center mb-8">
                 <img class="h-12 w-auto" src="@/assets/img/workorders-pad.png" alt="WorkOrders+ logo" />
                 <h2 class="ml-2 text-2xl font-extrabold text-gray-900">WorkOrders+</h2>
@@ -30,6 +31,26 @@
             </form>
         </div>
 
+        <!-- RFID login form -->
+        <div v-else class="max-w-md w-full bg-white rounded-lg shadow-md flex flex-col items-center">
+            <img class="" src="@/assets/img/rfid-loader.gif" alt="RFID loader" />
+            <RFIDLoginView />
+        </div>
+
+
+        <div class="text-center text-gray-500 my-5">
+            ILI
+        </div>
+        <!-- Toggle RFID login -->
+        <div v-if="!showRfidLogin" class="text-center text-blue-600 hover:text-blue-500 cursor-pointer"
+            @click="toggleRfidLogin">
+            se prijavite RFID karticom
+        </div>
+        <div v-else class="text-center text-blue-600 hover:text-blue-500 cursor-pointer" @click="toggleRfidLogin">
+            se prijavite korisničkim računom
+        </div>
+
+
         <!--
             natrag na početnu stranicu
         -->
@@ -52,13 +73,15 @@ import { storeToRefs } from 'pinia';
 import router from '@/router';
 import { useToast } from 'primevue/usetoast';
 import TheThinFooter from '@/components/layout/TheThinFooter.vue';
+import RFIDLoginView from './RFIDLoginView.vue';
 
 export default {
     name: 'LoginView',
     components: {
         InputText,
         Button,
-        TheThinFooter
+        TheThinFooter,
+        RFIDLoginView
     },
     setup() {
         const email = ref('');
@@ -94,10 +117,20 @@ export default {
 
         /**************toast END***************/
 
+        /*********** RFID login ***************/
+        const showRfidLogin = ref(false);
+
+        const toggleRfidLogin = () => {
+            showRfidLogin.value = !showRfidLogin.value;
+        };
+        /*********** RFID login END ***********/
+
         return {
             email,
             password,
-            login
+            login,
+            showRfidLogin,
+            toggleRfidLogin
         };
     }
 };
