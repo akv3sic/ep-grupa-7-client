@@ -24,7 +24,7 @@
                         <div class="px-6 py-3">Opis</div>
                         <div class="px-6 py-3">Prijavio/la</div>
                         <div class="px-6 py-3">Radni centar</div>
-                        <div class="px-6 py-3">Status</div>
+                        <div class="px-6 py-3"></div>
                     </div>
                 </div>
                 <!-- table body -->
@@ -53,8 +53,14 @@
                                 <span>{{ failure.work_center.name }}</span>
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
-                                <span class="text-xs text-gray-400 lg:hidden">Status:</span>
-                                <span>{{ failure.work_order }}</span>
+                                <span class="text-xs text-gray-400 lg:hidden"></span>
+                                <span v-if="failure.work_order" v-tooltip="'Vidi povezani radni nalog'">
+                                    <i class="pi pi-eye"
+                                        @click="$router.push('/office/radni-nalog/' + failure.work_order)"></i>
+                                </span>
+                                <span v-else v-tooltip="'Poveži s radnim nalogom'">
+                                    <i class="pi pi-link"></i>
+                                </span>
                             </div>
                         </div>
                     </template>
