@@ -2,38 +2,38 @@
     <div class="main">
         <h1 class="app-title">WorkOrders+</h1>
         <p>
-            School project at <a href="https://fsre.sum.ba">FSRE</a>.
+            Web aplikacija za upravljanje radnim nalozima u proizvodnim pogonima.
         </p>
-        <p>This app is currently under development.</p>
         <br>
 
-        <h2>Links:</h2>
+        <h2>Brzi linkovi:</h2>
         <div class="buttons">
-            <button @click="$router.push('/office')" class="button-available">
-                Office
-                <i class="pi pi-check"></i>
+            <button @click="$router.push('/about')" class="button-available">
+                O projetku
             </button>
-            <button @click="$router.push('/work-center-terminal')" class="button-available">
-                Work Center Terminal
-                <i class="pi pi-check"></i>
-            </button>
-            <button @click="$router.push('/prijava')" class="button-available">
-                Prijava
-                <i class="pi pi-check"></i>
-            </button>
-            <button @click="$router.push('/about')" class="button-unavailable">
-                About
-                <i class="pi pi-times"></i>
+            <a href="https://drawsql.app/teams/-b/diagrams/elektronicko-poslovanje-grupa-7" target="_blank">
+                <button class="button-available">
+                    Dijagram baze podataka
+                </button>
+            </a>
+            <button class="button-available">
+                Tehnička dokumentacija
             </button>
         </div>
     </div>
+
+    <TheThinFooter />
 </template>
-  
+
 <script lang="ts">
 import { defineComponent } from 'vue';
+import TheThinFooter from '@/components/layout/TheThinFooter.vue';
 
 export default defineComponent({
     name: 'AppHome',
+    components: {
+        TheThinFooter
+    },
     setup() {
         return {};
     },
@@ -48,12 +48,27 @@ export default defineComponent({
     align-items: center;
     height: 100vh;
     text-align: center;
+    position: relative;
+}
+
+.main::before {
+    content: "";
+    background-image: url('/src/assets/img/technical-background.jpg');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.2;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: absolute;
+    z-index: -1;
 }
 
 .buttons {
     margin-top: 1rem;
     display: flex;
-    gap: 1rem;
+    gap: 0.8rem;
 }
 
 @media (max-width: 768px) {
@@ -63,7 +78,7 @@ export default defineComponent({
 }
 
 button {
-    padding: 1rem;
+    padding: 0.6rem;
     color: white;
     border: none;
     border-radius: 4px;
@@ -76,10 +91,6 @@ button {
     background-color: #1e88e5;
 }
 
-.button-unavailable {
-    background-color: #9e9e9e;
-}
-
 button:hover {
     opacity: 0.8;
 }
@@ -90,4 +101,3 @@ button:hover {
     margin-bottom: 0;
 }
 </style>
-  
