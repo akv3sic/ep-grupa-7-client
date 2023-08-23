@@ -8,6 +8,14 @@ export const useAuthStore = defineStore("auth", () => {
     const user = ref<User | null>(null);
     const error = ref("");
 
+    if (localStorage.getItem('isAuthenticated') === 'true') {
+        isAuthenticated.value = true;
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            user.value = JSON.parse(storedUser);
+        }
+    }
+
     /**
      * Asynchronously logs a user in using their email and password.
      * 
@@ -31,6 +39,8 @@ export const useAuthStore = defineStore("auth", () => {
             if (response.status === 200) {
                 isAuthenticated.value = true;
                 user.value = response.data.user;
+                localStorage.setItem('isAuthenticated', 'true');
+                localStorage.setItem('user', JSON.stringify(response.data.user));
                 return user.value?.is_superuser || false;
             } else {
                 error.value = "Login failed";

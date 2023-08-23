@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import OfficeHomeView from '../views/office/OfficeHomeView.vue'
 import OfficeRootView from '../views/office/OfficeRootView.vue'
 import Home from '../views/Home.vue'
+import { useAuthStore } from '@/stores/auth';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,6 +21,10 @@ const router = createRouter({
       path: '/office',
       name: 'office',
       component: OfficeRootView,
+      meta: {
+        requiresAuth: true,
+        requiresSuperuser: true,
+      },
       children: [
         {
           path: '',
@@ -108,7 +113,8 @@ const router = createRouter({
       name: 'work-center-terminal',
       component: () => import('@/views/workCenterTerminal/WorkCenterTerminalRootView.vue'),
       meta: {
-        title: 'Pregled'
+        requiresAuth: true,
+        requiresSuperuser: false,
       },
       children: [
         {
@@ -156,9 +162,35 @@ const router = createRouter({
   ]
 })
 
-// dynamically set application title
-router.beforeEach((to, from) => {
-  to.meta.title ? document.title = `${to.meta.title} - WorkOrders+` : document.title = 'WorkOrders+'
-})
+router.beforeEach((to, from, next) => {
+  // set page title
+  to.meta.title ? document.title = `${to.meta.title} - WorkOrders+` : document.title = 'WorkOrders+';
+
+  const isAuthenticatedFromLocalStorage = localStorage.getItem('isAuthenticated') === 'true';
+  const userFromLocalStorage = JSON.parse(localStorage.getItem('user') || 'null');
+
+  // check if route requires auth
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+      if (!isAuthenticatedFromLocalStorage) {
+          next({
+              name: 'login',
+              query: { redirect: to.fullPath }
+          });
+          return;
+      }
+  }
+
+  // check if route requires superuser
+  if (to.matched.some(record => record.meta.requiresSuperuser)) {
+      if (!userFromLocalStorage?.is_superuser || !userFromLocalStorage) {
+          next({ name: 'forbidden' });
+          return;
+      }
+  }
+
+  next();
+});
+
+
 
 export default router
