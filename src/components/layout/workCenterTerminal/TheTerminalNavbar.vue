@@ -15,7 +15,9 @@
                             <i class="pi pi-exclamation-circle text-white mr-1"></i>
                             Prijavi kvar
                         </router-link>
-                        <AccountCircle fillColor="#fff" class="ml-5" />
+                        <AccountCircle fillColor="#fff" class="ml-5" @click="toggleOverlayMenu" aria-haspopup="true"
+                            aria-controls="overlay_menu_terminal" />
+                        <Menu ref="menuTerminal" id="overlay_menu_terminal" :model="items" :popup="true" />
                     </div>
                 </div>
             </div>
@@ -24,16 +26,62 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
 import AccountCircle from 'vue-material-design-icons/AccountCircle.vue';
+import Menu from "primevue/menu";
+import { useToast } from "primevue/usetoast";
+import { useAuthStore } from '@/stores/auth';
+import { storeToRefs } from 'pinia';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
-    name: 'TerminaNavbar',
+    name: 'TerminalNavbar',
     setup() {
-        return {};
+        const authStore = useAuthStore();
+        const { user } = storeToRefs(authStore);
+
+        const toast = useToast();
+        const router = useRouter();
+
+        const menuTerminal = ref();
+        const items = ref([
+            {
+                label: user.value?.first_name + ' ' + user.value?.last_name,
+                items: [
+                    {
+                        label: 'Profil',
+                        icon: 'pi pi-user',
+                        command: () => {
+                        }
+                    },
+                    {
+                        label: 'Odjava',
+                        icon: 'pi pi-sign-out',
+                        command: async () => {
+                            const wasLogoutSuccessful = await authStore.logout();
+
+                            if (wasLogoutSuccessful) {
+                                toast.add({ severity: 'success', summary: 'Odjava uspješna', detail: 'Doviđenja!', life: 3000 });
+                                router.push('/');
+                            } else {
+                                toast.add({ severity: 'error', summary: 'Greška prilikom odjave', detail: 'Pokušajte ponovo ili kontaktirajte administratora.', life: 3000 });
+                            }
+                        }
+                    }
+                ]
+            },
+        ]);
+
+        const toggleOverlayMenu = (event: any) => {
+            menuTerminal.value.toggle(event);
+        };
+
+        return {
+            items, toggleOverlayMenu, menuTerminal
+        };
     },
     components: {
-        AccountCircle,
+        AccountCircle, Menu
     },
 });
 </script>

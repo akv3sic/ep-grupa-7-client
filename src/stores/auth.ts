@@ -56,10 +56,55 @@ export const useAuthStore = defineStore("auth", () => {
         }
     };
 
+    /**
+     * Asynchronously logs the current user out of the system.
+     * 
+     * 1. Sends an empty POST request to the `/api/logout/` endpoint to log the user out from the backend.
+     * 2. If the logout is successful (status 200), the authentication state is reset, user details are cleared,
+     *    and relevant items are removed from the `localStorage`.
+     * 3. In the event of any errors during logout, a corresponding error message will be set.
+     * 
+     * @returns {Promise<boolean>} Returns `true` if logout was successful, otherwise `false`.
+     * 
+     * @throws Sets the `error` to a corresponding error message if any error occurs.
+     * 
+     * @example
+     * 
+     * const loggedOut = await logout();
+     * if (loggedOut) {
+     *     console.log("Successfully logged out");
+     * } else {
+     *     console.log("Failed to log out");
+     * }
+     */
+    const logout = async (): Promise<boolean> => {
+        try {
+            const response = await httpClient.post('/logout/');
+            if (response.status === 200) {
+                isAuthenticated.value = false;
+                user.value = null;
+                localStorage.removeItem('isAuthenticated');
+                localStorage.removeItem('user');
+                return true;
+            } else {
+                error.value = "Greška prilikom odjave";
+                return false;
+            }
+        } catch (err: any) {
+            if (err instanceof Error) {
+                error.value = err.message;
+            } else {
+                error.value = "Greška prilikom odjave";
+            }
+            return false;
+        }
+    };
+
     return {
         isAuthenticated,
         user,
         error,
-        login
+        login,
+        logout
     };
 });
