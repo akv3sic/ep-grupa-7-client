@@ -2,6 +2,7 @@ import httpClient from "@/common/httpClient";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import type { Failure } from "@/models/failure.model";
+import type { FailureForCreation } from "@/models/failureForCreation.model";
 
 export const useFailuresStore = defineStore("failures", () => {
     const failures = ref<Failure[]>([]);
@@ -28,9 +29,30 @@ export const useFailuresStore = defineStore("failures", () => {
         }
     };
 
+    const reportFailure = async (failureData: FailureForCreation) => {
+        isLoading.value = true;
+        try {
+            const response = await httpClient.post("/failures/", failureData);
+            if (response.status === 201 || response.status === 200) {  // 201 - Created, 200 - OK
+                failures.value = [...failures.value, response.data];
+            } else {
+                error.value = "Greška pri prijavi kvara";
+            }
+        } catch (err: any) {
+            if (err instanceof Error) {
+                error.value = err.message;
+            } else {
+                error.value = "Greška pri prijavi kvara";
+            }
+        } finally {
+            isLoading.value = false;
+        }
+    };
+
     return {
         failures,
         fetchFailures,
+        reportFailure,
         isLoading,
         error
     };

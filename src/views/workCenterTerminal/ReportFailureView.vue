@@ -35,6 +35,8 @@ import { ref, defineComponent } from 'vue';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
+import { useToast } from 'primevue/usetoast';
+import { useFailuresStore } from '@/stores/failures.store';
 
 interface FailureReport {
     title: string;
@@ -49,14 +51,31 @@ export default defineComponent({
         Button
     },
     setup() {
+        const toast = useToast();
+        const failuresStore = useFailuresStore();
+
         const failure = ref<FailureReport>({
             title: '',
             description: ''
         });
 
-        function reportFailure() {
-            console.log('Prijavljeni kvar:', failure.value);
-            // TODO: Implementirati logiku za prijavu kvara
+        async function reportFailure() {
+            try {
+                await failuresStore.reportFailure({
+                    name: failure.value.title,
+                    description: failure.value.description
+                });
+
+                toast.add({ severity: 'success', summary: 'Uspjeh', detail: 'Kvar je uspješno prijavljen.', life: 3000 });
+
+                // reset form
+                failure.value = {
+                    title: '',
+                    description: ''
+                };
+            } catch (error) {
+                toast.add({ severity: 'error', summary: 'Greška', detail: 'Došlo je do greške prilikom prijave kvara.', life: 3000 });
+            }
         }
 
         return {
