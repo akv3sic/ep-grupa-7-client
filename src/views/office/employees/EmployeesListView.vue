@@ -96,7 +96,8 @@
         <div class="flex-1 flex-row align-center mt-4">
             <!-- filter by department -->
             <Dropdown optionValue="id" optionLabel="name" placeholder="Filtriraj po odjelu" showClear
-                class="w-full md:w-1/3 lg:w-1/6 m-1" :options="departments" />
+                class="w-full md:w-1/3 lg:w-1/6 m-1" :options="departments" v-model="selectedDepartment"
+                @change="fetchFilteredEmployees" />
         </div>
     </div>
 
@@ -166,7 +167,17 @@
             </div>
         </div>
     </div>
-    <Paginator :rows="6" :totalRecords="50" :rowsPerPageOptions="[6, 10, 15]" class="mt-4" />
+    <Paginator :rows="6" :totalRecords="50" :rowsPerPageOptions="[6, 10, 15]" class="mt-4" v-if="employees.length > 0" />
+
+    <!-- no employees -->
+    <div class="flex flex-col mt-4" v-if="employees.length == 0">
+        <div class="flex flex-col justify-center items-center">
+            <AlertCirleOutline fillColor="#6B7280" class="mb-5" :size="45" />
+            <h3 class="font-medium text-sm text-gray-500">
+                Nema zaposlenika koji zadovoljavaju odabrane kriterije
+            </h3>
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -197,6 +208,13 @@ export default {
         /* departments */
         const departmentsStore = useDepartmentsStore();
         const { departments } = storeToRefs(departmentsStore);
+
+        /* filter employees */
+        const selectedDepartment = ref(null);
+
+        const fetchFilteredEmployees = () => {
+            employeesStore.fetchEmployees(selectedDepartment.value);
+        };
 
         /* search employees */
         const searchQuery = ref('');
@@ -260,7 +278,8 @@ export default {
         })
 
         return {
-            employees, isLoadingEmployees, searchQuery, isModalVisible, openSearchModal, closeSearchModal, recentSearches, employeesSearchResults, departments
+            employees, isLoadingEmployees, searchQuery, isModalVisible, openSearchModal, closeSearchModal,
+            recentSearches, employeesSearchResults, departments, selectedDepartment, fetchFilteredEmployees
         }
     },
     components: {

@@ -8,10 +8,12 @@ export const useEmployeesStore = defineStore("employees", () => {
     const isLoading = ref(false);
     const error = ref("");
 
-    const fetchEmployees = async () => {
+    const fetchEmployees = async (departmentId: number | null = null) => {
         isLoading.value = true;
         try {
-            const response = await httpClient.get("/user/");
+            let endpoint = "/user/";
+            
+            const response = await httpClient.get(endpoint, { params: { department: departmentId } });
             if (response.status === 200) {
                 employees.value = response.data;
             } else {
@@ -26,7 +28,7 @@ export const useEmployeesStore = defineStore("employees", () => {
         } finally {
             isLoading.value = false;
         }
-    };
+    }; 
 
     return {
         employees,
