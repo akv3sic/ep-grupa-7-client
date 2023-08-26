@@ -7,8 +7,12 @@
                 <!-- page description  -->
                 <p class="text-blue-500">Pregled prijavljenih kvarova</p>
             </div>
+            <!-- show all or only unresolved failures -->
             <div class="flex-1 flex-col">
-                <Button label="Prijavi kvar" icon="pi pi-plus" size="small"></Button>
+                <div class="flex flex-row">
+                    <span class="text-gray-500 mt-1">Prikaži samo nepovezane kvarove</span>
+                    <InputSwitch v-model="showOnlyUnresolved" class="ml-2" />
+                </div>
             </div>
         </div>
     </div>
@@ -76,27 +80,46 @@ import VCircularLoader from '@/components/base/VCircularLoader.vue';
 import Button from 'primevue/button';
 import { useFailuresStore } from '@/stores/failures.store';
 import { storeToRefs } from 'pinia';
-import { onMounted } from 'vue';
+import { onMounted, ref, watchEffect } from 'vue';
 import { truncateDescription } from '@/utils/stringUtils';
+import InputSwitch from 'primevue/inputswitch';
 
 export default {
     name: 'FailuresList',
     setup() {
         const { failures, isLoading } = storeToRefs(useFailuresStore());
 
+        const showOnlyUnresolved = ref(false);
+
+        const showOnlyUnresolvedFailures = () => {
+            return failures.value.filter((failure) => !failure.work_order);
+        };
+
+        watchEffect(() => {
+            if (showOnlyUnresolved.value) {
+                failures.value = showOnlyUnresolvedFailures();
+            }
+            else
+                useFailuresStore().fetchFailures();
+        });
+
+
         onMounted(() => {
             useFailuresStore().fetchFailures();
-        })
+        });
 
         return {
             isLoading,
             failures,
-            truncateDescription
+            truncateDescription,
+            showOnlyUnresolved,
+            showOnlyUnresolvedFailures,
         };
     },
     components: {
         VCircularLoader,
-        Button
+        Button,
+        InputSwitch
     }
 };
 </script>
