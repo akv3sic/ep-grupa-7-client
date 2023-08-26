@@ -16,13 +16,16 @@
         <!-- inline adding of new department -->
         <div class="grid grid-cols-2 lg:grid-cols-4 mt-2 pl-2 shadow" v-if="isAddingActive">
             <div class="py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
-                <VTextField label="Naziv" />
+                <VTextField label="Naziv" :input-value="departmentToAdd.name"
+                    @update:input-value="newValue => departmentToAdd.name = newValue" />
             </div>
             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
-                <VTextField label="Opis" />
+                <VTextField label="Opis" :input-value="departmentToAdd.description"
+                    @update:input-value="newValue => departmentToAdd.description = newValue" />
             </div>
             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
-                <VTextField label="Odgovorna osoba" />
+                <Dropdown :options="employees" placeholder="Odgovorna osoba" :option-label="fullName" option-value="id"
+                    v-model="departmentToAdd.manager" />
             </div>
             <!-- actions -->
             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
@@ -139,6 +142,7 @@ import { truncateDescription } from '@/utils/stringUtils';
 import { useEmployeesStore } from '@/stores/employees.store';
 import Dropdown from 'primevue/dropdown';
 import type { DepartmentForUpdate } from '@/models/departmentForUpdate.model';
+import type { DepartmentForCreation } from '@/models/departmentForCreation.model';
 
 export default {
     name: 'departments',
@@ -183,6 +187,13 @@ export default {
 
         // methods for adding
         const isAddingActive = ref(false);
+        const departmentToAdd = ref<DepartmentForCreation>(
+            {
+                name: '',
+                description: '',
+                manager: null
+            }
+        );
 
         const activateAdding = () => {
             isAddingActive.value = true;
@@ -190,12 +201,25 @@ export default {
 
         const cancelAdding = () => {
             isAddingActive.value = false;
+            departmentToAdd.value = {
+                name: '',
+                description: '',
+                manager: null
+            };
         };
 
         const saveNewdepartment = () => {
-
-            isAddingActive.value = false;
-            showSuccesfullyAddedNewdepartment();
+            departmentsStore.createDepartment(departmentToAdd.value).then((isCreated) => {
+                if (isCreated) {
+                    showSuccesfullyAddedNewdepartment();
+                    departmentsStore.fetchDepartments();
+                    cancelAdding();
+                } else {
+                    toast.add({ severity: 'error', summary: 'Greška', detail: 'Greška. Odjel nije dodan.', life: 3000 });
+                }
+            }).catch((error) => {
+                toast.add({ severity: 'error', summary: 'Greška', detail: 'Došlo je do greške prilikom dodavanja odjela.', life: 3000 });
+            });
         };
 
         // methods for deleting
@@ -252,7 +276,7 @@ export default {
         return {
             departments, isLoading, editingId, activateEditing, cancelEditing, saveEditing, isAddingActive, activateAdding,
             cancelAdding, saveNewdepartment, truncateDescription, deletingId, confirmDeleteDepartment, executeDeleteDepartment, cancelDelete,
-            employees, isLoadingEmployees, fullName, editedDepartment
+            employees, isLoadingEmployees, fullName, editedDepartment, departmentToAdd
         };
     },
     components: {
