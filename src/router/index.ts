@@ -20,6 +20,7 @@ const router = createRouter({
     {
       path: '/office',
       name: 'office',
+      redirect: { name: 'employees' },
       component: OfficeRootView,
       meta: {
         requiresAuth: true,
@@ -27,7 +28,7 @@ const router = createRouter({
       },
       children: [
         {
-          path: '',
+          path: 'pregled',
           name: 'office-home',
           component: OfficeHomeView,
           meta: {
@@ -111,6 +112,7 @@ const router = createRouter({
     {
       path: '/work-center-terminal',
       name: 'work-center-terminal',
+      redirect: { name: 'work-center-terminal-work-orders' },
       component: () => import('@/views/workCenterTerminal/WorkCenterTerminalRootView.vue'),
       meta: {
         requiresAuth: true,
@@ -118,7 +120,7 @@ const router = createRouter({
       },
       children: [
         {
-          path: '',
+          path: 'pregled',
           name: 'work-center-terminal-home',
           component: () => import('@/views/workCenterTerminal/WorkCenterTerminalHomeView.vue'),
           meta: {
