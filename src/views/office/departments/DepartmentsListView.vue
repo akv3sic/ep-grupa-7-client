@@ -61,7 +61,7 @@
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Opis:</span>
-                                <span v-tooltip="department.description">{{ truncateDescription(department.description) }}</span>
+                                <span v-tooltip="department.description">{{ truncateDescription(department.description)}}</span>
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Odgovorna osoba:</span>
@@ -72,8 +72,16 @@
                                 <span>
                                     <span class="text-xs text-gray-400 lg:hidden">Akcije:</span>
                                     <span class="flex">
-                                        <Pencil @click="activateEditing(department.id)" />
-                                        <DeleteOutline />
+                                        <template v-if="deletingId !== department.id">
+                                            <Pencil @click="activateEditing(department.id)" />
+                                            <DeleteOutline @click="confirmDeleteDepartment(department.id)" />
+                                        </template>
+                                        <template v-else>
+                                            <!-- delete confirmation -->
+                                            <span class="font-semibold mr-1">Sigurno?</span>
+                                            <Check fillColor="green" @click="executeDeleteDepartment(department.id)" />
+                                            <Close fillColor="red" @click="cancelDelete" />
+                                        </template>
                                     </span>
                                 </span>
                             </div>
@@ -164,6 +172,33 @@ export default {
             showSuccesfullyAddedNewdepartment();
         };
 
+        // methods for deleting
+        const deletingId = ref<number | null>(null);
+
+        const confirmDeleteDepartment = (id: number) => {
+            deletingId.value = id;
+        };
+
+        const executeDeleteDepartment = async (id: number) => {
+            try {
+                const isDeleted = await departmentsStore.deleteDepartment(id);
+                if (isDeleted) {
+                    toast.add({ severity: 'success', summary: 'Uspjeh', detail: 'Odjel uspješno izbrisan.', life: 3000 });
+                } else {
+                    toast.add({ severity: 'error', summary: 'Greška', detail: 'Greška. Odjel nije izbrisan.', life: 3000 });
+                }
+            } catch (error) {
+                // Handle unexpected errors (network issues, server errors, etc.)
+                toast.add({ severity: 'error', summary: 'Greška', detail: 'Došlo je do greške prilikom brisanja odjela.', life: 3000 });
+            }
+            deletingId.value = null;
+        };
+
+
+        const cancelDelete = () => {
+            deletingId.value = null;
+        };
+
         /*************** toast ****************/
         const toast = useToast();
 
@@ -181,7 +216,8 @@ export default {
         });
 
         return {
-            departments, isLoading, editingId, activateEditing, cancelEditing, saveEditing, isAddingActive, activateAdding, cancelAdding, saveNewdepartment, truncateDescription
+            departments, isLoading, editingId, activateEditing, cancelEditing, saveEditing, isAddingActive, activateAdding,
+            cancelAdding, saveNewdepartment, truncateDescription, deletingId, confirmDeleteDepartment, executeDeleteDepartment, cancelDelete
         };
     },
     components: {
