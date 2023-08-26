@@ -75,8 +75,16 @@
                                 <span>
                                     <span class="text-xs text-gray-400 lg:hidden">Akcije:</span>
                                     <span class="flex">
-                                        <Pencil @click="activateEditing(workplace.id)" />
-                                        <DeleteOutline @click="triggerDeleteWorkplace(workplace.id)" />
+                                        <template v-if="deletingId !== workplace.id">
+                                            <Pencil @click="activateEditing(workplace.id)" />
+                                            <DeleteOutline @click="confirmDeleteWorkplace(workplace.id)" />
+                                        </template>
+                                        <template v-else>
+                                            <!-- delete confirmation -->
+                                            <span class="font-semibold mr-1">Sigurno?</span>
+                                            <Check fillColor="green" @click="executeDeleteWorkplace(workplace.id)" />
+                                            <Close fillColor="red" @click="cancelDelete" />
+                                        </template>
                                     </span>
                                 </span>
                             </div>
@@ -187,10 +195,33 @@ export default {
             };
         };
 
-        // deleting
-        const triggerDeleteWorkplace = (id: number) => {
-                workplacesStore.deleteWorkplace(id);
+        // delete confirmation
+        const deletingId = ref<number | null>(null);
+
+        const confirmDeleteWorkplace = (id: number) => {
+            deletingId.value = id;
         };
+
+        const executeDeleteWorkplace = async (id: number) => {
+            const isDeleted = await workplacesStore.deleteWorkplace(id);
+
+            // Check the result and show corresponding toast.
+            if (isDeleted) {
+                toast.add({ severity: 'success', summary: 'Uspjeh', detail: 'Radno mjesto uspješno obrisano.', life: 3000 });
+            } else {
+                toast.add({ severity: 'error', summary: 'Greška', detail: 'Neuspješno brisanje radnog mjesta.', life: 3000 });
+            }
+
+            // Clear the deletingId.
+            deletingId.value = null;
+        };
+
+
+
+        const cancelDelete = () => {
+            deletingId.value = null;
+        };
+
 
         /*************** toast ****************/
         const toast = useToast();
@@ -209,7 +240,9 @@ export default {
         });
 
         return {
-            workplaces, isLoading, editingId, activateEditing, cancelEditing, saveEditing, isAddingActive, activateAdding, cancelAdding, saveNewWorkplace, newWorkplace, editedWorkplace, triggerDeleteWorkplace
+            workplaces, isLoading, editingId, activateEditing, cancelEditing, saveEditing, isAddingActive, activateAdding,
+            cancelAdding, saveNewWorkplace, newWorkplace, editedWorkplace,
+            confirmDeleteWorkplace, executeDeleteWorkplace, cancelDelete, deletingId
         };
     },
     components: {

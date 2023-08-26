@@ -72,26 +72,24 @@ export const useWorkplacesStore = defineStore("workplaces", () => {
         }
     };
 
+    /**
+     * Delete a workplace by its ID.
+     * @param workplaceId - The ID of the workplace to be deleted.
+     * @returns true if the deletion was successful, false otherwise.
+     */
     const deleteWorkplace = async (workplaceId: number) => {
-        // soft delete
         isLoading.value = true;
-        const workPlaceToDelete = workplaces.value.find(wp => wp.id === workplaceId);
-        if (!workPlaceToDelete) {
-            error.value = "Radno mjesto ne postoji";
-            isLoading.value = false;
-            return;
-        }
-        workPlaceToDelete.is_deleted = true;
         try {
-            const response = await httpClient.put(`/workplaces/${workplaceId}/`, workPlaceToDelete);
-            if (response.status === 200) {
+            const response = await httpClient.delete(`/workplaces/${workplaceId}/`);
+            if (response.status === 204) {
                 const index = workplaces.value.findIndex(wp => wp.id === workplaceId);
                 if (index !== -1) {
-                    // remove workplace from array
                     workplaces.value.splice(index, 1);
                 }
+                return true;
             } else {
                 error.value = "Greška pri brisanju radnog mjesta";
+                return false;
             }
         } catch (err: any) {
             if (err instanceof Error) {
@@ -99,6 +97,7 @@ export const useWorkplacesStore = defineStore("workplaces", () => {
             } else {
                 error.value = "Greška pri brisanju radnog mjesta";
             }
+            return false;
         } finally {
             isLoading.value = false;
         }
