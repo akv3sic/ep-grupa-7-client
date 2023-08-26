@@ -61,7 +61,8 @@
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Opis:</span>
-                                <span v-tooltip="department.description">{{ truncateDescription(department.description)}}</span>
+                                <span v-tooltip="department.description">{{
+                                    truncateDescription(department.description) }}</span>
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Odgovorna osoba:</span>
@@ -90,13 +91,16 @@
                         <!-- inline editing -->
                         <div class="grid grid-cols-2 lg:grid-cols-4" v-else>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
-                                <VTextField label="Naziv" />
+                                <VTextField label="Naziv" :input-value="editedDepartment.name"
+                                    @update:input-value="newValue => editedDepartment.name = newValue" />
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
-                                <VTextField label="Opis" />
+                                <VTextField label="Opis" :input-value="editedDepartment.description"
+                                    @update:input-value="newValue => editedDepartment.description = newValue" />
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
-                                <VTextField label="Odgovorna osoba" />
+                                <Dropdown :options="employees" placeholder="Odgovorna osoba" :option-label="fullName"
+                                    option-value="id" v-model="editedDepartment.manager.id" />
                             </div>
                             <!-- actions -->
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
@@ -127,11 +131,14 @@ import Check from 'vue-material-design-icons/Check.vue';
 import ContentSavePlus from 'vue-material-design-icons/ContentSavePlus.vue';
 import Toast from 'primevue/toast';
 import Button from 'primevue/button';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { useToast } from "primevue/usetoast";
 import { useDepartmentsStore } from '@/stores/departments';
 import { storeToRefs } from 'pinia';
 import { truncateDescription } from '@/utils/stringUtils';
+import { useEmployeesStore } from '@/stores/employees.store';
+import Dropdown from 'primevue/dropdown';
+import type { DepartmentForUpdate } from '@/models/departmentForUpdate.model';
 
 export default {
     name: 'departments',
@@ -139,20 +146,39 @@ export default {
         const departmentsStore = useDepartmentsStore();
         const { departments, isLoading } = storeToRefs(departmentsStore);
 
+        const employeesStore = useEmployeesStore();
+        const { employees, isLoading: isLoadingEmployees } = storeToRefs(employeesStore);
+
         // methods for editing
         const editingId = ref<number | null>(null);
+        const editedDepartment = ref<any>(null);
 
         const activateEditing = (id: number) => {
             editingId.value = id;
+            editedDepartment.value = departments.value.find((department: any) => department.id === id);
         };
 
         const cancelEditing = () => {
             editingId.value = null;
         };
-
-        const saveEditing = () => {
+        /**
+         * Saves changes made to the department.
+         */
+        const saveEditing = async () => {
+            const departmentToUpdate: DepartmentForUpdate = {
+                id: editedDepartment.value.id,
+                name: editedDepartment.value.name,
+                description: editedDepartment.value.description,
+                manager: editedDepartment.value.manager.id
+            };
+            const isUpdated = await departmentsStore.updateDepartment(departmentToUpdate);
             editingId.value = null;
-            showChangesSavedSuccessfully();
+            if (isUpdated) {
+                showChangesSavedSuccessfully();
+                departmentsStore.fetchDepartments();
+            } else {
+                toast.add({ severity: 'error', summary: 'Greška', detail: 'Greška. Promjene nisu spremljene.', life: 3000 });
+            }
         };
 
         // methods for adding
@@ -211,13 +237,22 @@ export default {
         };
         /**************toast END***************/
 
+        // computed
+        const fullName = computed(() => {
+            return (employee: any) => {
+                return employee.first_name + ' ' + employee.last_name;
+            };
+        });
+
         onMounted(() => {
             departmentsStore.fetchDepartments();
+            employeesStore.fetchEmployees(null, "is_superuser");
         });
 
         return {
             departments, isLoading, editingId, activateEditing, cancelEditing, saveEditing, isAddingActive, activateAdding,
-            cancelAdding, saveNewdepartment, truncateDescription, deletingId, confirmDeleteDepartment, executeDeleteDepartment, cancelDelete
+            cancelAdding, saveNewdepartment, truncateDescription, deletingId, confirmDeleteDepartment, executeDeleteDepartment, cancelDelete,
+            employees, isLoadingEmployees, fullName, editedDepartment
         };
     },
     components: {
@@ -229,7 +264,8 @@ export default {
         ContentSavePlus,
         Toast,
         Button,
-        VCircularLoader
+        VCircularLoader,
+        Dropdown
     },
 };
 </script>

@@ -2,6 +2,7 @@ import httpClient from "@/common/httpClient";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import type { Department } from "@/models/department.model";
+import type { DepartmentForUpdate } from "@/models/departmentForUpdate.model";
 
 export const useDepartmentsStore = defineStore("departments", () => {
     const departments = ref<Department[]>([]);
@@ -57,11 +58,39 @@ export const useDepartmentsStore = defineStore("departments", () => {
     }
 
 
+    /**
+     * Update a department.
+     * @param department - The department to update.
+     * @returns true if the update was successful, false otherwise.
+     */
+    const updateDepartment = async (department: DepartmentForUpdate) => {
+        isLoading.value = true;
+        try {
+            const response = await httpClient.put(`/departments/${department.id}/`, department);
+            if (response.status === 200) {
+                return true;
+            } else {
+                error.value = "Greška pri ažuriranju odjela";
+                return false;
+            }
+        } catch (err: any) {
+            if (err instanceof Error) {
+                error.value = err.message;
+            } else {
+                error.value = "Greška pri ažuriranju odjela";
+            }
+            return false;
+        } finally {
+            isLoading.value = false;
+        }
+    }
+
     return {
         departments,
         fetchDepartments,
         isLoading,
         error,
         deleteDepartment,
+        updateDepartment
     };
 });

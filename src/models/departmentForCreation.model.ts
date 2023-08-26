@@ -1,5 +1,5 @@
 export interface DepartmentForCreation {
-    manager_id: number;
+    manager: number;
     name: string;
     description: string;
 }

@@ -8,12 +8,12 @@ export const useEmployeesStore = defineStore("employees", () => {
     const isLoading = ref(false);
     const error = ref("");
 
-    const fetchEmployees = async (departmentId: number | null = null) => {
+    const fetchEmployees = async (departmentId: number | null = null, role: string | null = null) => {
         isLoading.value = true;
         try {
             let endpoint = "/user/";
             
-            const response = await httpClient.get(endpoint, { params: { department: departmentId } });
+            const response = await httpClient.get(endpoint, { params: { department: departmentId, role: role } });
             if (response.status === 200) {
                 employees.value = response.data;
             } else {
