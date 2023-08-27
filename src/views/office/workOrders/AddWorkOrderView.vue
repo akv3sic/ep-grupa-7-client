@@ -39,7 +39,7 @@
             <!-- Kategorija -->
             <div class="md:mx-1">
                 <span class="p-float-label">
-                    <Dropdown id="category" v-model="order.category" :options="categories" class="w-full" />
+                    <Dropdown id="category" v-model="order.category" :options="categories" class="w-full" optionLabel="name" option-value="id" />
                     <label for="category">Kategorija</label>
                 </span>
             </div>
@@ -60,12 +60,14 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent } from 'vue';
+import { ref, defineComponent, onMounted } from 'vue';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
 import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
 import type { WorkOrderForCreation } from '@/models/workOrderForCreation.model';
+import { useWorkOrderCategoriesStore } from '@/stores/workOrderCategories';
+import { storeToRefs } from 'pinia';
 
 export default defineComponent({
     name: 'AddNewWorkOrderView',
@@ -76,6 +78,12 @@ export default defineComponent({
         Button
     },
     setup() {
+        // work order categories store
+        const workOrderCategoriesStore = useWorkOrderCategoriesStore();
+        const { workOrderCategories: categories } = storeToRefs(workOrderCategoriesStore);
+
+
+
         const order = ref<WorkOrderForCreation>({
             title: '',
             description: '',
@@ -85,11 +93,14 @@ export default defineComponent({
         });
 
         const workCenters = ['Center1', 'Center2'];
-        const categories = ['Category1', 'Category2'];
 
         function addWorkOrder() {
             console.log('Dodaj radni nalog s informacijama:', order.value);
         }
+
+        onMounted(() => {
+            workOrderCategoriesStore.fetchWorkOrderCategories();
+        });
 
         return {
             order,
