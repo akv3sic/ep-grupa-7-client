@@ -19,7 +19,7 @@
             <div class="shadow overflow-hidden sm:rounded-lg">
                 <!-- tab menu -->
                 <div class="mt-4">
-                    <TabMenu :model="tabMenuItems" />
+                    <TabMenu :model="tabMenuItems" v-model:activeIndex="activeTab" />
                 </div>
                 <!-- table header -->
                 <div class="bg-gray-50 hidden lg:block" v-if="!isLoadingWorkOrders">
@@ -34,7 +34,7 @@
                 </div>
                 <!-- table body -->
                 <div class="bg-white divide-y divide-gray-200" v-if="!isLoadingWorkOrders">
-                    <template v-for="(workOrder, index) in workOrders" :key="index">
+                    <template v-for="(workOrder, index) in filteredWorkOrders" :key="index">
 
                         <div class="grid grid-cols-2 lg:grid-cols-6">
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
@@ -70,9 +70,10 @@
 import VCircularLoader from '@/components/base/VCircularLoader.vue';
 import Button from 'primevue/button';
 import TabMenu from 'primevue/tabmenu';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watchEffect } from 'vue';
 import { useWorkOrdersStore } from '@/stores/workOrders.store';
 import { storeToRefs } from 'pinia';
+import type { WorkOrder } from '@/models/workOrder.model';
 
 export default {
     name: 'WorkOrders',
@@ -84,17 +85,33 @@ export default {
         const workOrdersStore = useWorkOrdersStore();
         const { isLoading: isLoadingWorkOrders, workOrders } = storeToRefs(workOrdersStore);
 
+        const filteredWorkOrders = ref<WorkOrder[]>([]);
 
         /**
          * tab menu
          */
-        const currentTab = ref('New');
+        const activeTab = ref(0);
 
         const tabMenuItems = ref([
-            { label: 'Novi', icon: 'pi pi-fw pi-plus', command: () => { currentTab.value = 'New'; } },
-            { label: 'Aktivni', icon: 'pi pi-fw pi-cog', command: () => { currentTab.value = 'Active'; } },
-            { label: 'Završeni', icon: 'pi pi-fw pi-check', command: () => { currentTab.value = 'Finished'; } }
+            { label: 'Novi', icon: 'pi pi-fw pi-plus' },
+            { label: 'Aktivni', icon: 'pi pi-fw pi-cog' },
+            { label: 'Završeni', icon: 'pi pi-fw pi-check' }
         ]);
+
+        // watch for tab menu changes and filter work orders
+        watchEffect(() => {
+            switch (activeTab.value) {
+                case 0:
+                    filteredWorkOrders.value = workOrders.value.filter((workOrder) => workOrder.status === 'Novi');
+                    break;
+                case 1:
+                    filteredWorkOrders.value = workOrders.value.filter((workOrder) => workOrder.status === 'Aktivni');
+                    break;
+                case 2:
+                    filteredWorkOrders.value = workOrders.value.filter((workOrder) => workOrder.status === 'Završeni');
+                    break;
+            }
+        });
 
 
         /**
@@ -104,12 +121,11 @@ export default {
             workOrdersStore.fetchWorkOrders();
         });
 
-
         return {
             isLoadingWorkOrders,
-            workOrders,
-            currentTab,
-            tabMenuItems
+            filteredWorkOrders,
+            activeTab,
+            tabMenuItems,
         };
     },
     components: {
