@@ -56,8 +56,8 @@
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
                                 <span class="text-xs text-gray-400 lg:hidden">Dodijeljeno:</span>
 
-                                <div
-                                    class="flex flex-row items-center hover:border border-gray-400 transition duration-300 p-1" v-if="!isAssigneeChangeActive" @click="isAssigneeChangeActive = true">
+                                <div class="flex flex-row items-center hover:border border-gray-400 transition duration-300 ease-in-out p-1"
+                                    v-if="!isAssigneeChangeActive" @click="isAssigneeChangeActive = true">
                                     <!-- badge with initials -->
                                     <span
                                         :class="['w-8', 'h-8', 'text-white', 'rounded-full', 'flex', 'items-center', 'justify-center', 'mr-2', 'font-bold', 'text-sm', getColorForUser(workOrder.assigned_to)]">
@@ -67,11 +67,19 @@
                                     <!-- full name of assigned user -->
                                     <span>{{ workOrder.assigned_to }}</span>
                                 </div>
-                                
-                                <!-- dropdown for assignee change -->
-                                <Dropdown v-else class="w-full" :options="employees" :optionLabel="fullName" optionValue="id"
-                                    :filter="true" filterPlaceholder="Pretraži" placeholder="Odaberi" />
 
+                                <!-- dropdown for assignee change -->
+                                <Dropdown v-else class="w-full" :options="employees" :optionLabel="fullName"
+                                    optionValue="id" :filter="true" filterPlaceholder="Pretraži" placeholder="Odaberi" />
+
+                            </div>
+                            <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
+                                <span class="text-xs text-gray-400 lg:hidden">Akcije:</span>
+                                <Button v-if="workOrder.status === 'Novi'" v-tooltip="'Prebaci u aktivne'"
+                                    icon="pi pi-power-off" class="p-button-text p-button-secondary p-button-sm"
+                                    @click="activateWorkOrder(workOrder)" title="Aktiviraj" />
+                                <Button v-else v-tooltip="'Prebaci u završene'" icon="pi pi-check"
+                                    class="p-button-text p-button-secondary p-button-sm" title="Završi" />
                             </div>
                         </div>
                     </template>
@@ -93,6 +101,7 @@ import type { WorkOrder } from '@/models/workOrder.model';
 import { fullNameToInitials } from '@/utils/stringUtils';
 import Dropdown from 'primevue/dropdown';
 import { useEmployeesStore } from '@/stores/employees.store';
+import type { WorkOrderForCreation } from '@/models/workOrderForCreation.model';
 
 export default {
     name: 'WorkOrders',
@@ -120,6 +129,12 @@ export default {
 
         // logic for assignee change
         const isAssigneeChangeActive = ref(false);
+
+        // activate work order
+        const activateWorkOrder = (workOrder: WorkOrder) => {
+            console.log(workOrder);
+        };
+
 
         /**
          * tab menu
@@ -185,7 +200,8 @@ export default {
             getColorForUser,
             isAssigneeChangeActive,
             employees,
-            fullName
+            fullName,
+            activateWorkOrder
         };
     },
     components: {

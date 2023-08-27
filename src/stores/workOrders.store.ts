@@ -56,12 +56,40 @@ export const useWorkOrdersStore = defineStore("workOrders", () => {
             isLoading.value = false;
         }
     };
-    
+
+    /**
+   * @param workOrder - WorkOrderForCreation
+   * @returns boolean - true if successful, false otherwise
+   * @description - Updates a work
+   **/
+    const updateWorkOrder = async (workOrder: WorkOrder): Promise<boolean> => {
+        isLoading.value = true;
+        try {
+            const response = await httpClient.put(`/work-orders/${workOrder.id}/`, workOrder);
+            if (response.status === 200) { // 200 - OK
+                return true;
+            } else {
+                error.value = "Greška pri ažuriranju radnog naloga";
+                return false;
+            }
+        } catch (err: any) {
+            if (err instanceof Error) {
+                error.value = err.message;
+            } else {
+                error.value = "Greška pri ažuriranju radnog naloga";
+            }
+            return false;
+        } finally {
+            isLoading.value = false;
+        }
+    }
+
     return {
         workOrders,
         fetchWorkOrders,
         addWorkOrder,
         isLoading,
-        error
+        error,
+        updateWorkOrder
     };
 });
