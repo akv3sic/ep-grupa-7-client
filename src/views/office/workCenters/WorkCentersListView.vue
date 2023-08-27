@@ -16,13 +16,16 @@
         <!-- inline adding of new workCenter -->
         <div class="grid grid-cols-2 lg:grid-cols-4 mt-2 pl-2 shadow" v-if="isAddingActive">
             <div class="py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
-                <VTextField label="Naziv" />
+                <VTextField label="Naziv" :input-value="workCenterToAdd.name"
+                    @update:input-value="newValue => workCenterToAdd.name = newValue" />
             </div>
             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
-                <VTextField label="Opis" />
+                <VTextField label="Opis" :input-value="workCenterToAdd.description"
+                    @update:input-value="newValue => workCenterToAdd.description = newValue" />
             </div>
             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
-                <Dropdown :options="departments" optionLabel="name" placeholder="Odjel" />
+                <Dropdown :options="departments" optionLabel="name" placeholder="Odjel" option-value="id"
+                    v-model="workCenterToAdd.department" />
             </div>
             <!-- actions -->
             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
@@ -127,6 +130,7 @@ import { useWorkCentersStore } from '@/stores/workcenters';
 import { storeToRefs } from 'pinia';
 import { truncateDescription } from '@/utils/stringUtils';
 import { useDepartmentsStore } from '@/stores/departments';
+import type { WorkCenterForCreation } from "@/models/workcenterForCreation.model";
 
 export default {
     name: 'WorkCenters',
@@ -156,6 +160,11 @@ export default {
 
         // methods and variables for adding new
         const isAddingActive = ref(false);
+        const workCenterToAdd = ref<WorkCenterForCreation>({
+            name: '',
+            description: '',
+            department: 0
+        });
 
         const activateAdding = () => {
             isAddingActive.value = true;
@@ -163,11 +172,25 @@ export default {
 
         const cancelAdding = () => {
             isAddingActive.value = false;
+            workCenterToAdd.value = {
+                name: '',
+                description: '',
+                department: 0
+            };
         };
 
-        const addNew = () => {
-            isAddingActive.value = false;
-            showSuccesfullyAddedNewWorkCenter();
+        /**
+         * Adds new work center
+         */
+        const addNew = async () => {
+            const isSuccessfullyAdded = await workCentersStore.createWorkCenter(workCenterToAdd.value);
+            if (isSuccessfullyAdded) {
+                showSuccesfullyAddedNewWorkCenter();
+                workCentersStore.fetchWorkCenters();
+            } else
+                toast.add({ severity: 'error', summary: 'Greška', detail: 'Došlo je do greške prilikom dodavanja novog centra.', life: 3000 });
+
+            cancelAdding();
         };
 
         /*************** toast ****************/
@@ -188,7 +211,8 @@ export default {
         });
 
         return {
-            workCenters, isLoading, editingId, activateEditing, cancelEditing, saveEditing, isAddingActive, activateAdding, cancelAdding, addNew, departments, truncateDescription
+            workCenters, isLoading, editingId, activateEditing, cancelEditing, saveEditing, isAddingActive, activateAdding, cancelAdding,
+            addNew, departments, truncateDescription, workCenterToAdd
         };
     },
     components: {
