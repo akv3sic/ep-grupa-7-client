@@ -78,8 +78,9 @@
                                 <Button v-if="workOrder.status === 'Novi'" v-tooltip="'Prebaci u aktivne'"
                                     icon="pi pi-power-off" class="p-button-text p-button-secondary p-button-sm"
                                     @click="activateWorkOrder(workOrder)" title="Aktiviraj" />
-                                <Button v-else v-tooltip="'Prebaci u završene'" icon="pi pi-check"
-                                    class="p-button-text p-button-secondary p-button-sm" title="Završi" />
+                                <Button v-else-if="workOrder.status === 'Aktivni'" v-tooltip="'Prebaci u završene'"
+                                    icon="pi pi-check" class="p-button-text p-button-secondary p-button-sm" title="Završi"
+                                    @click="finishWorkOrder(workOrder)" />
                             </div>
                         </div>
                     </template>
@@ -101,11 +102,13 @@ import type { WorkOrder } from '@/models/workOrder.model';
 import { fullNameToInitials } from '@/utils/stringUtils';
 import Dropdown from 'primevue/dropdown';
 import { useEmployeesStore } from '@/stores/employees.store';
-import type { WorkOrderForCreation } from '@/models/workOrderForCreation.model';
+import { useToast } from 'primevue/usetoast';
 
 export default {
     name: 'WorkOrders',
     setup() {
+        const toast = useToast();
+
         /**
          * work orders store
          */
@@ -135,8 +138,49 @@ export default {
         };
 
         // activate work order
-        const activateWorkOrder = (workOrder: WorkOrder) => {
-            console.log(workOrder);
+        const activateWorkOrder = async (workOrder: WorkOrder) => {
+            const isSuccessful = await workOrdersStore.activateWorkOrder(workOrder);
+            if (isSuccessful) {
+                const message = `Radni nalog ${workOrder.title} uspješno prebačen u aktivne`;
+                toast.add({
+                    severity: 'success',
+                    summary: 'Uspješno',
+                    detail: message,
+                    life: 3000
+                });
+                // remove work order from filtered work orders
+                filteredWorkOrders.value = filteredWorkOrders.value.filter((wo) => wo.id !== workOrder.id);
+            } else {
+                toast.add({
+                    severity: 'error',
+                    summary: 'Greška',
+                    detail: 'Manipuliranje radnim nalogom neuspješno',
+                    life: 3000
+                });
+            }
+        };
+
+        // finish work order
+        const finishWorkOrder = async (workOrder: WorkOrder) => {
+            const isSuccessful = await workOrdersStore.finishWorkOrder(workOrder);
+            if (isSuccessful) {
+                const message = `Radni nalog ${workOrder.title} uspješno prebačen u završene`;
+                toast.add({
+                    severity: 'success',
+                    summary: 'Uspješno',
+                    detail: message,
+                    life: 3000
+                });
+                // remove work order from filtered work orders
+                filteredWorkOrders.value = filteredWorkOrders.value.filter((wo) => wo.id !== workOrder.id);
+            } else {
+                toast.add({
+                    severity: 'error',
+                    summary: 'Greška',
+                    detail: 'Manipuliranje radnim nalogom neuspješno',
+                    life: 3000
+                });
+            }
         };
 
 
@@ -206,7 +250,8 @@ export default {
             fullName,
             activateWorkOrder,
             assigneeChangeId,
-            activateAssigneeChange
+            activateAssigneeChange,
+            finishWorkOrder
         };
     },
     components: {

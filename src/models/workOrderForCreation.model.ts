@@ -5,4 +5,5 @@ export interface WorkOrderForCreation {
     work_center: number | null;
     category: number | null;
     assigned_to: number | null;
+    status: number | null;
 }

@@ -58,15 +58,34 @@ export const useWorkOrdersStore = defineStore("workOrders", () => {
     };
 
     /**
-   * @param workOrder - WorkOrderForCreation
-   * @returns boolean - true if successful, false otherwise
-   * @description - Updates a work
-   **/
-    const updateWorkOrder = async (workOrder: WorkOrder): Promise<boolean> => {
+     * Update the status of a work order. If no status is provided, the status remains unchanged.
+     * 
+     * @param workOrder - The work order to be updated.
+     * @param status - The new status for the work order (optional).
+     * @returns Promise<boolean> - true if the update was successful, false otherwise.
+     */
+    const updateWorkOrderStatus = async (
+        workOrder: WorkOrder,
+        status?: number
+    ): Promise<boolean> => {
         isLoading.value = true;
         try {
-            const response = await httpClient.put(`/work-orders/${workOrder.id}/`, workOrder);
-            if (response.status === 200) { // 200 - OK
+            const workOrderToUpdate: WorkOrderForCreation = {
+                title: workOrder.title,
+                description: workOrder.description,
+                due_time: workOrder.due_time,
+                work_center: workOrder.work_center_id,
+                category: workOrder.category_id,
+                assigned_to: workOrder.assigned_to_id,
+                status: workOrder.status_id
+            };
+
+            if (status !== undefined) {
+                workOrderToUpdate.status = status;
+            }
+
+            const response = await httpClient.put(`/work-orders/${workOrder.id}/`, workOrderToUpdate);
+            if (response.status === 200) {
                 return true;
             } else {
                 error.value = "Greška pri ažuriranju radnog naloga";
@@ -84,12 +103,35 @@ export const useWorkOrdersStore = defineStore("workOrders", () => {
         }
     }
 
+    /**
+     * Activate a work order.
+     * 
+     * @param workOrder - The work order to be activated.
+     * @returns Promise<boolean> - true if the activation was successful, false otherwise.
+     */
+    const activateWorkOrder = async (workOrder: WorkOrder): Promise<boolean> => {
+        return await updateWorkOrderStatus(workOrder, 2); // 2 - Active
+    }
+
+    /**
+     * Finish a work order.
+     * 
+     * @param workOrder - The work order to be finished.
+     * @returns Promise<boolean> - true if the work order was successfully finished, false otherwise.
+     */
+    const finishWorkOrder = async (workOrder: WorkOrder): Promise<boolean> => {
+        return await updateWorkOrderStatus(workOrder, 4); // 4 - Završeni
+    }
+
+
+
     return {
         workOrders,
         fetchWorkOrders,
         addWorkOrder,
         isLoading,
         error,
-        updateWorkOrder
+        activateWorkOrder,
+        finishWorkOrder
     };
 });
