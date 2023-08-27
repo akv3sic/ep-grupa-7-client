@@ -57,7 +57,7 @@
                                 <span class="text-xs text-gray-400 lg:hidden">Dodijeljeno:</span>
 
                                 <div class="flex flex-row items-center hover:border border-gray-400 transition duration-300 ease-in-out p-1"
-                                    v-if="!isAssigneeChangeActive" @click="isAssigneeChangeActive = true">
+                                    v-if="workOrder.id !== assigneeChangeId" @click="activateAssigneeChange(workOrder.id)">
                                     <!-- badge with initials -->
                                     <span
                                         :class="['w-8', 'h-8', 'text-white', 'rounded-full', 'flex', 'items-center', 'justify-center', 'mr-2', 'font-bold', 'text-sm', getColorForUser(workOrder.assigned_to)]">
@@ -128,7 +128,11 @@ export default {
         });
 
         // logic for assignee change
-        const isAssigneeChangeActive = ref(false);
+        const assigneeChangeId = ref<number | null>(null);
+
+        const activateAssigneeChange = (id: number) => {
+            assigneeChangeId.value = id;
+        };
 
         // activate work order
         const activateWorkOrder = (workOrder: WorkOrder) => {
@@ -198,10 +202,11 @@ export default {
             tabMenuItems,
             fullNameToInitials,
             getColorForUser,
-            isAssigneeChangeActive,
             employees,
             fullName,
-            activateWorkOrder
+            activateWorkOrder,
+            assigneeChangeId,
+            activateAssigneeChange
         };
     },
     components: {
