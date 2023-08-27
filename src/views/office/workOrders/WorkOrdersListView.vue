@@ -54,8 +54,24 @@
                                 <span>{{ workOrder.work_center }}</span>
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
-                                <span class="text-xs text-gray-400 lg:hidden">Assigned To:</span>
-                                <span>{{ workOrder.assigned_to }}</span>
+                                <span class="text-xs text-gray-400 lg:hidden">Dodijeljeno:</span>
+
+                                <div
+                                    class="flex flex-row items-center hover:border border-gray-400 transition duration-300 p-1" v-if="!isAssigneeChangeActive" @click="isAssigneeChangeActive = true">
+                                    <!-- badge with initials -->
+                                    <span
+                                        :class="['w-8', 'h-8', 'text-white', 'rounded-full', 'flex', 'items-center', 'justify-center', 'mr-2', 'font-bold', 'text-sm', getColorForUser(workOrder.assigned_to)]">
+                                        {{ fullNameToInitials(workOrder.assigned_to) }}
+                                    </span>
+
+                                    <!-- full name of assigned user -->
+                                    <span>{{ workOrder.assigned_to }}</span>
+                                </div>
+                                
+                                <!-- dropdown for assignee change -->
+                                <Dropdown v-else class="w-full" :options="employees" :optionLabel="fullName" optionValue="id"
+                                    :filter="true" filterPlaceholder="Pretraži" placeholder="Odaberi" />
+
                             </div>
                         </div>
                     </template>
@@ -70,10 +86,13 @@
 import VCircularLoader from '@/components/base/VCircularLoader.vue';
 import Button from 'primevue/button';
 import TabMenu from 'primevue/tabmenu';
-import { ref, onMounted, watchEffect } from 'vue';
+import { ref, onMounted, watchEffect, computed } from 'vue';
 import { useWorkOrdersStore } from '@/stores/workOrders.store';
 import { storeToRefs } from 'pinia';
 import type { WorkOrder } from '@/models/workOrder.model';
+import { fullNameToInitials } from '@/utils/stringUtils';
+import Dropdown from 'primevue/dropdown';
+import { useEmployeesStore } from '@/stores/employees.store';
 
 export default {
     name: 'WorkOrders',
@@ -86,6 +105,21 @@ export default {
         const { isLoading: isLoadingWorkOrders, workOrders } = storeToRefs(workOrdersStore);
 
         const filteredWorkOrders = ref<WorkOrder[]>([]);
+
+        /**
+         * employees store
+         */
+        const employeesStore = useEmployeesStore();
+        const { employees } = storeToRefs(employeesStore);
+
+        const fullName = computed(() => {
+            return (employee: any) => {
+                return employee.first_name + ' ' + employee.last_name;
+            };
+        });
+
+        // logic for assignee change
+        const isAssigneeChangeActive = ref(false);
 
         /**
          * tab menu
@@ -113,12 +147,33 @@ export default {
             }
         });
 
+        /**
+         * get random color for badge
+         */
+        const getColorForUser = (name: string): string => {
+            const colors = [
+                'bg-blue-500',
+                'bg-red-500',
+                'bg-green-500',
+                'bg-yellow-500',
+                'bg-indigo-500'
+            ];
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const index = Math.abs(hash) % colors.length;
+            return colors[index];
+        }
+
+
 
         /**
          * fetch work orders
          */
         onMounted(() => {
             workOrdersStore.fetchWorkOrders();
+            employeesStore.fetchEmployees();
         });
 
         return {
@@ -126,12 +181,18 @@ export default {
             filteredWorkOrders,
             activeTab,
             tabMenuItems,
+            fullNameToInitials,
+            getColorForUser,
+            isAssigneeChangeActive,
+            employees,
+            fullName
         };
     },
     components: {
         VCircularLoader,
         Button,
-        TabMenu
+        TabMenu,
+        Dropdown
     }
 };
 </script>
