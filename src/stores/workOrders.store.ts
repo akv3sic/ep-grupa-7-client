@@ -3,11 +3,38 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import type { WorkOrder } from "@/models/workOrder.model";
 import type { WorkOrderForCreation } from "@/models/workOrderForCreation.model";
+import createWebSocketClient from "@/common/webSocketClient";
 
 export const useWorkOrdersStore = defineStore("workOrders", () => {
     const workOrders = ref<WorkOrder[]>([]);
     const isLoading = ref(false);
     const error = ref("");
+
+    // create a WebSocket client for the work order endpoint
+    const socketClient = createWebSocketClient("workorder/", {
+        onMessage: (message) => {
+            console.log("WebSocket message received in store:", message.data);
+            
+            const data = JSON.parse(message.data);
+
+            // Handle the message based on its type
+            // 1. create
+            if (data.type === "create") {
+                workOrders.value.push(data.workorder);
+            // 2. update
+            } else if (data.type === "update") {
+                const index = workOrders.value.findIndex(wo => wo.id === data.workorder.id);
+                if (index !== -1) {
+                    workOrders.value[index] = { ...workOrders.value[index], ...data.workorder };
+                } else {
+                    console.warn("Received update for unknown work order:", data.workorder);
+                }
+            // base case: unknown message type
+            } else {
+                console.warn("Received unknown message type:", data.type);
+            }
+        },
+    });
 
     const fetchWorkOrders = async () => {
         isLoading.value = true;
