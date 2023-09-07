@@ -61,12 +61,14 @@ export const useWorkOrdersStore = defineStore("workOrders", () => {
      * Update the status of a work order. If no status is provided, the status remains unchanged.
      * 
      * @param workOrder - The work order to be updated.
-     * @param status - The new status for the work order (optional).
+     * @param statusId - The new status id for the work order (optional).
+     * @param assignedToId - The new assigned user id for the work order (optional).
      * @returns Promise<boolean> - true if the update was successful, false otherwise.
      */
     const updateWorkOrderStatus = async (
         workOrder: WorkOrder,
-        status?: number
+        statusId?: number,
+        assignedToId?: number
     ): Promise<boolean> => {
         isLoading.value = true;
         try {
@@ -80,9 +82,14 @@ export const useWorkOrdersStore = defineStore("workOrders", () => {
                 status: workOrder.status_id
             };
 
-            if (status !== undefined) {
-                workOrderToUpdate.status = status;
+            if (statusId !== undefined) {
+                workOrderToUpdate.status = statusId;
             }
+
+            if (assignedToId !== undefined) {
+                workOrderToUpdate.assigned_to = assignedToId;
+            }
+
 
             const response = await httpClient.put(`/work-orders/${workOrder.id}/`, workOrderToUpdate);
             if (response.status === 200) {
@@ -123,7 +130,16 @@ export const useWorkOrdersStore = defineStore("workOrders", () => {
         return await updateWorkOrderStatus(workOrder, 4); // 4 - Završeni
     }
 
-
+    /**
+     * Change the assigned user of a work order.
+     * 
+     * @param workOrder - The work order to be updated.
+     * @param assignedToId - The new assigned user id for the work order.
+     * @returns Promise<boolean> - true if the update was successful, false otherwise.
+     */
+    const changeAssignedTo = async (workOrder: WorkOrder, assignedToId: number): Promise<boolean> => {
+        return await updateWorkOrderStatus(workOrder, undefined, assignedToId);
+    }
 
     return {
         workOrders,
@@ -132,6 +148,7 @@ export const useWorkOrdersStore = defineStore("workOrders", () => {
         isLoading,
         error,
         activateWorkOrder,
-        finishWorkOrder
+        finishWorkOrder,
+        changeAssignedTo
     };
 });

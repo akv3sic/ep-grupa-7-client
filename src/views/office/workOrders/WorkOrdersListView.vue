@@ -70,7 +70,9 @@
 
                                 <!-- dropdown for assignee change -->
                                 <Dropdown v-else class="w-full" :options="employees" :optionLabel="fullName"
-                                    optionValue="id" :filter="true" filterPlaceholder="Pretraži" placeholder="Odaberi" />
+                                    optionValue="id" :filter="true" filterPlaceholder="Pretraži" placeholder="Odaberi"
+                                    v-model="assigneeNewId" />
+
 
                             </div>
                             <div class="px-6 py-4 lg:whitespace-nowrap lg:text-sm lg:text-gray-900 flex flex-col">
@@ -130,18 +132,56 @@ export default {
             };
         });
 
-        // logic for assignee change
+        // logic for assignee change UI
         const assigneeChangeId = ref<number | null>(null);
 
         const activateAssigneeChange = (id: number) => {
             assigneeChangeId.value = id;
+            const workOrder = workOrders.value.find((wo) => wo.id === id);
+            if (workOrder) {
+                assigneeNewId.value = workOrder.assigned_to_id;
+            }
+        };
+
+        // ref, function and watcher for assignee change
+        const assigneeNewId = ref<number | null>(null);
+
+        // watch assignee change
+        watchEffect(() => {
+            if (assigneeNewId.value !== null && assigneeChangeId.value !== null) {
+                const workOrder = workOrders.value.find((wo) => wo.id === assigneeChangeId.value);
+                if (workOrder && assigneeNewId.value !== workOrder.assigned_to_id) {
+                    assignNewUser(workOrder, assigneeNewId.value);
+                }
+            }
+        });
+
+        const assignNewUser = async (workOrder: WorkOrder, employeeId: number) => {
+            const isSuccessful = await workOrdersStore.changeAssignedTo(workOrder, employeeId);
+            if (isSuccessful) {
+                const employee = employees.value.find((employee) => employee.id === employeeId);
+                const message = `Radni nalog '${workOrder.title}'' uspješno dodijeljen korisniku ${employee?.first_name}  ${employee?.last_name}`;
+                toast.add({
+                    severity: 'success',
+                    summary: 'Uspješno',
+                    detail: message,
+                    life: 3000
+                });
+                // update work order client side
+                workOrder.assigned_to = employee?.first_name + ' ' + employee?.last_name;
+                workOrder.assigned_to_id = employeeId;
+            } else {
+                showErrorToast();
+            }
+            assigneeChangeId.value = null;
+            assigneeNewId.value = null;
         };
 
         // activate work order
         const activateWorkOrder = async (workOrder: WorkOrder) => {
             const isSuccessful = await workOrdersStore.activateWorkOrder(workOrder);
             if (isSuccessful) {
-                const message = `Radni nalog ${workOrder.title} uspješno prebačen u aktivne`;
+                const message = `Radni nalog '${workOrder.title}' uspješno prebačen u aktivne`;
                 toast.add({
                     severity: 'success',
                     summary: 'Uspješno',
@@ -151,20 +191,24 @@ export default {
                 // remove work order from filtered work orders
                 filteredWorkOrders.value = filteredWorkOrders.value.filter((wo) => wo.id !== workOrder.id);
             } else {
-                toast.add({
-                    severity: 'error',
-                    summary: 'Greška',
-                    detail: 'Manipuliranje radnim nalogom neuspješno',
-                    life: 3000
-                });
+                showErrorToast();
             }
+        };
+
+        const showErrorToast = () => {
+            toast.add({
+                severity: 'error',
+                summary: 'Greška',
+                detail: 'Manipuliranje radnim nalogom neuspješno',
+                life: 3000
+            });
         };
 
         // finish work order
         const finishWorkOrder = async (workOrder: WorkOrder) => {
             const isSuccessful = await workOrdersStore.finishWorkOrder(workOrder);
             if (isSuccessful) {
-                const message = `Radni nalog ${workOrder.title} uspješno prebačen u završene`;
+                const message = `Radni nalog '${workOrder.title}' uspješno prebačen u završene`;
                 toast.add({
                     severity: 'success',
                     summary: 'Uspješno',
@@ -174,12 +218,7 @@ export default {
                 // remove work order from filtered work orders
                 filteredWorkOrders.value = filteredWorkOrders.value.filter((wo) => wo.id !== workOrder.id);
             } else {
-                toast.add({
-                    severity: 'error',
-                    summary: 'Greška',
-                    detail: 'Manipuliranje radnim nalogom neuspješno',
-                    life: 3000
-                });
+                showErrorToast();
             }
         };
 
@@ -251,7 +290,8 @@ export default {
             activateWorkOrder,
             assigneeChangeId,
             activateAssigneeChange,
-            finishWorkOrder
+            finishWorkOrder,
+            assigneeNewId
         };
     },
     components: {
