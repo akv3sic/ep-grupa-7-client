@@ -39,7 +39,6 @@ export default defineComponent({
   name: 'NavigationDrawer',
   setup() {
     const navigationItems = [
-      { label: 'Pregled', link: '/office/pregled', icon: 'pi pi-home' },
       { label: 'Zaposlenici', link: '/office/zaposlenici', icon: 'pi pi-user' },
       { label: 'Radna mjesta', link: '/office/radna-mjesta', icon: 'pi pi-briefcase' },
       { label: 'Odjeli', link: '/office/odjeli', icon: 'pi pi-building' },
