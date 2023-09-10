@@ -8,7 +8,9 @@
               class="text-white mt-1 w-8 h-8 flex justify-center align-middle focus:outline-none rounded-full hover:bg-blue-400 bg-opacity-75">
               <MenuIcon @click="toggleNavigationDrawer" class="mt-1" />
             </button>
-            <div class="mx-4 text-white font-semibold text-lg">WorkOrders+</div>
+            <router-link to="/">
+              <div class="mx-4 text-white font-semibold text-lg">WorkOrders+</div>
+            </router-link>
           </div>
 
           <div class="flex justify-end">

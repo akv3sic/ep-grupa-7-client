@@ -4,7 +4,9 @@
             <div class="px-2 py-2">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
-                        <div class="mx-4 text-white font-semibold text-lg">WorkOrders+</div>
+                        <router-link to="/">
+                            <div class="mx-4 text-white font-semibold text-lg">WorkOrders+</div>
+                        </router-link>
                     </div>
                     <div class="flex items-center justify-end">
                         <router-link to="/work-center-terminal/radni-nalozi" class="mx-2 text-white navigation__item">
